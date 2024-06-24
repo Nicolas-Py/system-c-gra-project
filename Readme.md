@@ -25,6 +25,4 @@ https://github.com/Nicolas-Py/system-c-gra-project.git
 - [ ] Untersuchen Sie das Speicherzugriffsver- halten eines speicherintensiven Algorithmus. Erstellen Sie csv-Dateien, die beispielhaft die Speicherzugriffe des Algorithmus beschreiben.
 
 ## Praktischer Teil
-- [ ] Nico: Set up C / C++ file
-- [ ] Daniel / Ziang: Recherche zu Cache Implementierung in System C (Datanstrukturen/Algorithmus...)
-- [ ] Make file
+- [ ] Daniel / Ziang: 
