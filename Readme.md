@@ -1,7 +1,15 @@
 # Urls
 ### Artemis:
+Nico:
 ```
 https://go98mir@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
+```
+Daniel:
+```
+https://go98puj@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
+```
+Ziang:
+```
 ```
 ### GitHub:
 ```
