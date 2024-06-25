@@ -6,7 +6,9 @@
 #define MODULES_HPP
 
 #include <systemc>
+#include "systemc.h"
 using namespace sc_core;
+
 extern "C" int run_simulation(int seconds);
 
 
