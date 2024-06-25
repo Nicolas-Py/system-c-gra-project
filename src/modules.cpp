@@ -4,7 +4,7 @@
 #include <systemc>
 #include "modules.hpp"
 
-int run_simulation() {
+int run_simulation(int seconds) {
     return 1;
 }
 
