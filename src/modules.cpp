@@ -5,19 +5,7 @@
 #include <systemc>
 
 
-struct Request {
-     uint32_t addr ;
-     uint32_t data ;
-     int we ;
-};
-struct Result {
-	size_t cycles ;
- 	size_t misses ;
- 	size_t hits ;
- 	size_t primitiveGateCount;
-};
-
-struct Result run_simulation (
+Result run_simulation (
 	int cycles,
 	int directMapped,
 	unsigned cacheLines,
@@ -25,11 +13,12 @@ struct Result run_simulation (
 	unsigned cacheLatency,
 	unsigned memoryLatency,
 	size_t numRequests,
-	struct Request requests[numRequests],
+	Request requests[numRequests],
 	const char * tracefile
 )
 {
-    return 1;
+	Result testResult = {1, 1, 1, 1};
+    return testResult;
 }
 
 int sc_main(int argc, char* argv[]) {
