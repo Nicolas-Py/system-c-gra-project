@@ -22,36 +22,82 @@ Result run_simulation (
     return testResult;
 }
 
-
 struct Cache {
 	typedef uint32_t Address;
 	typedef uint32_t Tag;
 	typedef uint32_t Index;
 	typedef uint32_t Offset;
 
-	struct cacheLine {
+	struct CacheLine {
 		bool occupied = false;
 		Tag tag = 0;
 		std::vector<uint32_t> line;
 
-		cacheLine(size_t size): line(size, 0){}
+		CacheLine(size_t size): line(size, 0){}
 	};
 
 	unsigned cacheLines;
 	unsigned cacheLineSize;
-	std::vector<cacheLine> cache;
-	int offset;
-	int index;
+	std::vector<CacheLine> cache;
+	uint32_t entrySize;
+	int offsetBitAmount;
+	int indexBitAmount;
 
 
-	Cache(unsigned cacheLines, unsigned cacheLineSize):
-		cacheLines(cacheLines), cacheLineSize(cacheLineSize), cache(cacheLines, cacheLine(cacheLineSize)), index(log2(cacheLines))
-	{
+	Cache(unsigned cacheLines, unsigned cacheLineSize, int entrySize):
+		cacheLines(cacheLines),
+		cacheLineSize(cacheLineSize),
+		cache(cacheLines, CacheLine(cacheLineSize/entrySize)),
+		entrySize(entrySize),
+		offsetBitAmount(static_cast<int>(std::ceil(std::log2(cacheLineSize)))),
+		indexBitAmount(static_cast<int>(std::ceil(std::log2(cacheLines))))
+	{}
+
+	void insert_read(Request request) {
+		Offset offset = request.addr << (32-offsetBitAmount);
+		offset >>= (32-offsetBitAmount);
+
+		Index index = request.addr << (32-offsetBitAmount-indexBitAmount);
+		index >>= (32-indexBitAmount);
+
+		Tag tag = request.addr >> (offsetBitAmount+indexBitAmount);
+
+		//Testing:
+		std::bitset<32> Tag(tag);
+		std::bitset<32> Index(index);
+		std::bitset<32> Offset(offset);
+
+		std::cout << "Tag: " << Tag << " | Decimal: " << tag << std::endl;
+		std::cout << "Index: " << Index << " | Decimal: " << index << std::endl;
+		std::cout << "Offset: " << Offset << " | Decimal: " << offset << std::endl;
+		//Test end
+
+		CacheLine& line = cache[index];
+		if (request.we) {
+			if (line.occupied) {
+				if (line.tag == tag) {
+					line.line[offset/entrySize] = request.data;
+					//write through to memory
+				} else {
+					//fetch block from memory
+					for (int i=0; i<cacheLineSize/entrySize; i++) {
+						line.line[i] = -100;
+					}
+				}
+			} else {
+				line.occupied = true;
+				line.tag = tag;
+				line.line[offset/entrySize] = request.data;
+			}
+		} else {
+
+		}
 
 	}
 
+	//Testing:
 	void printCache() {
-		for (cacheLine cacheLine: cache) {
+		for (CacheLine cacheLine: cache) {
 			std::cout << "Tag " << cacheLine.tag << ": [";
 			for (uint32_t entry : cacheLine.line) {
 				std::cout << " " << entry << ",";
@@ -60,34 +106,31 @@ struct Cache {
 		}
 	}
 
-	void insert(Request request) {
-
-	}
-
 };
 
 
 int sc_main(int argc, char* argv[]) {
-	//construct main memory
-	//hashmap for the areas in memory
-	//memory stores an ordered map of the block with values
-
-	//Methods:
-		// Write
-
-		//Read
-	unsigned cacheLines;
-	unsigned cacheLineSize;
+	unsigned cacheLines = 4;
+	unsigned cacheLineSize = 32;
 	unsigned cacheLatency;
 	unsigned memoryLatency;
+	unsigned addressSize = 4;
 
-	Cache sampleCache(20, 4);
-	std::cout << sampleCache.cacheLines << std::endl;
-	std::cout << sampleCache.cache[0].line.size() << std::endl;
-	sampleCache.cache[0].line[0] = 2;
+	Request x = {0x0, 24, 1};
+
+	Cache sampleCache(cacheLines, cacheLineSize, sizeof(x.data));
+
+	std::cout << "CacheLines: " << sampleCache.cacheLines << " | IndexBitAmount: " << sampleCache.indexBitAmount << std::endl;
+	std::cout << "CacheLineSize: " << sampleCache.cacheLineSize << " | OffsetBitAmount " << sampleCache.offsetBitAmount << std::endl;
+	std::cout << "EntrySize: " << sampleCache.entrySize << std::endl;
+
+	std::bitset<32> sample(x.addr);
+	std::cout << "Address binary: " << sample << std::endl;
+	sampleCache.insert_read(x);
+	x.addr = 0x10000000;
+	sampleCache.insert_read(x);
+
 	sampleCache.printCache();
-
-
 
 
 

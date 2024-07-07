@@ -5,7 +5,6 @@
 #------------------------
 
 #entry point and target name
-C_SOURCE = src/main.c
 CPP_SOURCE = src/modules.cpp
 
 #from .c to .o
@@ -14,7 +13,7 @@ C_OBJECT = $(C_SOURCE:.c=.o)
 #from .cpp to .o
 CPP_OBJECT = $(CPP_SOURCE:.cpp=.o)
 
-HEADERS := src/modules.hpp
+HEADERS := src/modules.cpp
 
 # name for executable/target name
 TARGET := cache_simulation
