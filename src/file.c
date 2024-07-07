@@ -1,26 +1,13 @@
+//
+// Created by Ziang Liu on 07.07.24.
+//
+
+
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "file.h"
-
-struct Result {
-	size_t cycles;
-	size_t misses;
-	size_t hits;
-	size_t primitiveGateCount;
-};
-extern struct Result run_simulation (
-	int cycles,
-	int directMapped,
-	unsigned cacheLines,
-	unsigned cacheLineSize,
-	unsigned cacheLatency,
-	unsigned memoryLatency,
-	size_t numRequests,
-	struct Request requests[numRequests],
-	const char* tracefile
-);
 
 size_t line_count(const char* path) {
     FILE* file = fopen(path, "r");
@@ -84,13 +71,12 @@ struct Request* parse_csv(const char* path, size_t* num_requests) {
 
 }
 
-
-
-
 int main(int argc, char* argv[]) {
     size_t num_requests;
-	struct Request requests[] = {};
-	struct Result res = run_simulation(2, 0, 4, 4, 4, 4, 0, requests, "");
-	printf("%lu\n", res.cycles);
+    struct Request* requests = parse_csv("input.csv", &num_requests);
+    for (int i = 0; i < num_requests; i++) {
+        printf("Request number: %u, address: %u, data: %u, write/enable: %d", i + 1, requests[i].addr, requests[i].data, requests[i].we);
+    }
+    free(requests);
     return 0;
 }
