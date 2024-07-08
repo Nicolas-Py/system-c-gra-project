@@ -2,7 +2,6 @@
 // Created by Nicolas von Mallinckrodt on 24.06.24.
 //
 #include "modules.hpp"
-#include <systemc>
 # include <map>
 
 
@@ -22,19 +21,18 @@ Result run_simulation (
     return testResult;
 }
 
-
 struct Cache {
 	typedef uint32_t Address;
 	typedef uint32_t Tag;
 	typedef uint32_t Index;
 	typedef uint32_t Offset;
 
-	struct cacheLine {
+	struct CacheLine {
 		bool occupied = false;
 		Tag tag = 0;
 		std::vector<uint32_t> line;
 
-		cacheLine(size_t size): line(size, 0){}
+		CacheLine(size_t size): line(size, 0){}
 	};
 
 	unsigned cacheLines;
@@ -57,9 +55,6 @@ struct Cache {
 	void insert_read(Request request) {
 		Offset offset = request.addr << (32-offsetBitAmount);
 		offset >>= (32-offsetBitAmount);
-
-		Index index = request.addr << (32-offsetBitAmount-indexBitAmount);
-		index >>= (32-indexBitAmount);
 
 		Index index = request.addr << (32-offsetBitAmount-indexBitAmount);
 		index >>= (32-indexBitAmount);
@@ -112,17 +107,13 @@ struct Cache {
 
 	//Testing:
 	void printCache() {
-		for (cacheLine cacheLine: cache) {
+		for (CacheLine cacheLine: cache) {
 			std::cout << "Tag " << cacheLine.tag << ": [";
 			for (uint32_t entry : cacheLine.line) {
 				std::cout << " " << entry << ",";
 			}
 			std::cout<< "]" << std::endl;
 		}
-	}
-
-	void insert(Request request) {
-
 	}
 
 };
@@ -148,8 +139,6 @@ int sc_main(int argc, char* argv[]) {
 	sampleCache.insert_read(x);
 
 	sampleCache.printCache();
-
-
 
 
 
