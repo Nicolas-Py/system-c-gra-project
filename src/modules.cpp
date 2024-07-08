@@ -22,18 +22,19 @@ Result run_simulation (
     return testResult;
 }
 
+
 struct Cache {
 	typedef uint32_t Address;
 	typedef uint32_t Tag;
 	typedef uint32_t Index;
 	typedef uint32_t Offset;
 
-	struct CacheLine {
+	struct cacheLine {
 		bool occupied = false;
 		Tag tag = 0;
 		std::vector<uint32_t> line;
 
-		CacheLine(size_t size): line(size, 0){}
+		cacheLine(size_t size): line(size, 0){}
 	};
 
 	unsigned cacheLines;
@@ -60,6 +61,9 @@ struct Cache {
 		Index index = request.addr << (32-offsetBitAmount-indexBitAmount);
 		index >>= (32-indexBitAmount);
 
+		Index index = request.addr << (32-offsetBitAmount-indexBitAmount);
+		index >>= (32-indexBitAmount);
+
 		Tag tag = request.addr >> (offsetBitAmount+indexBitAmount);
 
 		//Testing:
@@ -80,6 +84,7 @@ struct Cache {
 					//write through to memory
 				} else {
 					//fetch block from memory
+					line.tag = tag;
 					for (int i=0; i<cacheLineSize/entrySize; i++) {
 						line.line[i] = -100;
 					}
@@ -90,20 +95,34 @@ struct Cache {
 				line.line[offset/entrySize] = request.data;
 			}
 		} else {
-
+			if (line.occupied) {
+				if (line.tag == tag) {
+					line.line[offset] = request.data;
+				} else {
+					//fetch block from memory
+					line.tag = tag;
+					for (int i=0; i<cacheLineSize/entrySize; i++) {
+						line.line[i] = -100;
+					}
+				}
+			}
 		}
 
 	}
 
 	//Testing:
 	void printCache() {
-		for (CacheLine cacheLine: cache) {
+		for (cacheLine cacheLine: cache) {
 			std::cout << "Tag " << cacheLine.tag << ": [";
 			for (uint32_t entry : cacheLine.line) {
 				std::cout << " " << entry << ",";
 			}
 			std::cout<< "]" << std::endl;
 		}
+	}
+
+	void insert(Request request) {
+
 	}
 
 };
@@ -127,10 +146,10 @@ int sc_main(int argc, char* argv[]) {
 	std::bitset<32> sample(x.addr);
 	std::cout << "Address binary: " << sample << std::endl;
 	sampleCache.insert_read(x);
-	x.addr = 0x10000000;
-	sampleCache.insert_read(x);
 
 	sampleCache.printCache();
+
+
 
 
 

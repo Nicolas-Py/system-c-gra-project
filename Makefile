@@ -78,4 +78,3 @@ clean:
 	rm -rf src/*.o
 
 .PHONY: all debug release clean
-
