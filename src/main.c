@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <errno.h>
+#include <limits.h>
 #include <string.h>
 
 
@@ -73,46 +75,75 @@ int main(int argc, char* argv[]) {
     int c;
     int d_flag = 0;
     int f_flag = 0;
+
+
     while ((c = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
         switch (c) {
             case 'c':
-                cycles = atoi(optarg);
+                cycles = strtol(optarg, NULL, 10);
+                if (errno == ERANGE || cycles <= 0) {
+                    fprintf(stderr, "Error: Number of cycles must be a positive integer.\n");
+                    exit(1);
+                }
                 break;
             case 'd':
+                // toDo check for arg
                 if (f_flag) {
-                    fprintf(stderr, "You can only select either --directmapped or --fullassociative not both\n");
+                    fprintf(stderr, "Error: You can only select either --directmapped or --fullassociative, not both.\n");
                     exit(1);
                 }
                 directMapped = 1;
                 d_flag = 1;
                 break;
             case 'f':
+                // toDo check for arg
                 if (d_flag) {
-                    fprintf(stderr, "You can only select either --directmapped or --fullassociative not both\n");
+                    fprintf(stderr, "Error: You can only select either --directmapped or --fullassociative, not both.\n");
                     exit(1);
                 }
                 directMapped = 0;
                 f_flag = 1;
                 break;
             case 's':
-                cacheLineSize = atoi(optarg);
+                cacheLineSize = strtol(optarg, NULL, 10);
+                if (errno == ERANGE || cacheLineSize <= 0) {
+                    fprintf(stderr, "Error: Cache line size must be a positive integer.\n");
+                    exit(1);
+                }
                 break;
             case 'l':
-                cacheLines = atoi(optarg);
+                cacheLines = strtol(optarg, NULL, 10);
+                if (errno == ERANGE || cacheLines <= 0) {
+                    fprintf(stderr, "Error: Number of cache lines must be a positive integer.\n");
+                    exit(1);
+                }
                 break;
             case 'a':
-                cacheLatency = atoi(optarg);
+                cacheLatency = strtol(optarg, NULL, 10);
+                if (errno == ERANGE || cacheLatency <= 0) {
+                    fprintf(stderr, "Error: Cache latency must be a positive integer.\n");
+                    exit(1);
+                }
                 break;
             case 'm':
-                memoryLatency = atoi(optarg);
+                memoryLatency = strtol(optarg, NULL, 10);
+                if (errno == ERANGE || memoryLatency <= 0) {
+                    fprintf(stderr, "Error: Memory latency must be a positive integer.\n");
+                    exit(1);
+                }
                 break;
             case 't':
                 tracefile = optarg;
+                if (access(tracefile, F_OK) == -1) {
+                    fprintf(stderr, "Error: Tracefile '%s' does not exist.\n", tracefile);
+                    exit(1);
+                }
                 break;
             case 'h':
                 print_usage(argv[0]);
                 exit(0);
             case '?':
+                // Unrecognized option, getopt_long already prints an error message.
                 exit(1);
             default:
                 abort();
