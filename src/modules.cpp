@@ -2,7 +2,6 @@
 // Created by Nicolas von Mallinckrodt on 24.06.24.
 //
 #include "modules.hpp"
-#include <systemc>
 # include <map>
 
 
@@ -80,6 +79,7 @@ struct Cache {
 					//write through to memory
 				} else {
 					//fetch block from memory
+					line.tag = tag;
 					for (int i=0; i<cacheLineSize/entrySize; i++) {
 						line.line[i] = -100;
 					}
@@ -90,7 +90,17 @@ struct Cache {
 				line.line[offset/entrySize] = request.data;
 			}
 		} else {
-
+			if (line.occupied) {
+				if (line.tag == tag) {
+					line.line[offset] = request.data;
+				} else {
+					//fetch block from memory
+					line.tag = tag;
+					for (int i=0; i<cacheLineSize/entrySize; i++) {
+						line.line[i] = -100;
+					}
+				}
+			}
 		}
 
 	}
@@ -126,8 +136,6 @@ int sc_main(int argc, char* argv[]) {
 
 	std::bitset<32> sample(x.addr);
 	std::cout << "Address binary: " << sample << std::endl;
-	sampleCache.insert_read(x);
-	x.addr = 0x10000000;
 	sampleCache.insert_read(x);
 
 	sampleCache.printCache();
