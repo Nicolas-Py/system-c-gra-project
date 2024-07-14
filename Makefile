@@ -20,7 +20,7 @@ HEADERS := src/modules.hpp
 TARGET := cache_simulation
 
 #path to systemc installation
-SCPATH = ./systemc
+SCPATH = ../systemc
 
 #flags for the compiler which links to SystemC installation
 CXXFLAGS := -std=c++14  -I$(SCPATH)/include -L$(SCPATH)/lib -lsystemc -lm
