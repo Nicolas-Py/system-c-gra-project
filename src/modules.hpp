@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <systemc>
 #include "systemc.h"
+
 using namespace sc_core;
 
 struct Request {

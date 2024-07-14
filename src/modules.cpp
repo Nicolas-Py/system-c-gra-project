@@ -2,7 +2,7 @@
 // Created by Nicolas von Mallinckrodt on 24.06.24.
 //
 #include "modules.hpp"
-#include <systemc>
+
 
 
 Result run_simulation (
