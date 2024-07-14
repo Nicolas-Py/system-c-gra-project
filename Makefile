@@ -5,7 +5,7 @@
 #------------------------
 
 #entry point and target name
-C_SOURCE = src/main.c
+C_SOURCE = src/file.c
 CPP_SOURCE = src/modules.cpp
 
 #from .c to .o

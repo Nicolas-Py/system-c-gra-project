@@ -59,9 +59,16 @@ struct Request* parse_csv(const char* path, size_t* num_requests) {
             continue; // Skip invalid lines
         }
 
+        if (strcmp(operation, "W") == 0) {
+            requests[index].we = 1;
+        } else if (strcmp(operation, "R") == 0) {
+            requests[index].we = 0;
+        } else {
+            fprintf(stderr, "Unknownn operation '%s' at line %zu\n", operation, index + 1);
+        }
+
 
         requests[index].addr = (uint32_t)strtoul(addr_str, NULL, 0);
-        requests[index].we = (strcmp(operation, "write") == 0) ? 1 : 0;
         requests[index].data = (data_str) ? (uint32_t)strtoul(data_str, NULL, 0) : 0;
         index++;
     }

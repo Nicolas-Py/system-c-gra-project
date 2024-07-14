@@ -5,6 +5,7 @@
 #ifndef MODULES_HPP
 #define MODULES_HPP
 
+#include <cstdint>
 #include <systemc>
 #include "systemc.h"
 using namespace sc_core;
