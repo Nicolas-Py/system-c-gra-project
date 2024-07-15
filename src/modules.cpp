@@ -2,6 +2,8 @@
 // Created by Nicolas von Mallinckrodt on 24.06.24.
 //
 #include "modules.hpp"
+#include "direct-mapped-cache.hpp"
+#include "main-memory.hpp"
 # include <map>
 
 
@@ -176,7 +178,7 @@ struct Cache {
 				cache[index].line = memory.insert(request);
 				misses++;
 			}
-			std::cout << "Value for address " << request.addr << ": " << cache[index].line[offset/entrySize] << std::endl;
+			std::cout << "\nValue for address " << request.addr << ": " << cache[index].line[offset/entrySize] << std::endl;
 			cycles++;
 		}
 
@@ -185,12 +187,16 @@ struct Cache {
 		std::bitset<32> Tag(tag);
 		std::bitset<32> Index(index);
 		std::bitset<32> Offset(offset);
+		std::bitset<32> Address(request.addr);
 
+		std::cout << "\nCacheStuff: " << std::endl;
+		std::cout << "	Address binary: " << Address << " | Decimal: " << request.addr << std::endl;
 		std::cout << "	Tag: " << Tag << " | Decimal: " << tag << std::endl;
 		std::cout << "	Index: " << Index << " | Decimal: " << index << std::endl;
 		std::cout << "	Offset: " << Offset << " | Decimal: " << offset << std::endl;
 		std::cout << "\nCache lines:" << std::endl;
 		printCache();
+		std::cout << "Misses: " << misses  << " | Hits: " << hits << std::endl;
 		//Test end
 
 	}
@@ -212,24 +218,65 @@ struct Cache {
 
 int sc_main(int argc, char* argv[]) {
 
-	unsigned cacheLines = 4;
+	/*
+	unsigned cacheLines = 8;
 	unsigned cacheLineSize = 32;
 	unsigned cacheLatency;
 	unsigned memoryLatency;
-	unsigned addressSize = 4;
 
-	Request x = {0x1234, 24, 1};
 
-	Cache sampleCache(cacheLines, cacheLineSize, sizeof(x.data));
+	Cache sampleCache(cacheLines, cacheLineSize, 4);
 
 	std::cout << "\nCache stuff:" << std::endl;
 	std::cout << "	CacheLines: " << sampleCache.cacheLines << " | IndexBitAmount: " << sampleCache.indexBitAmount << std::endl;
 	std::cout << "	CacheLineSize: " << sampleCache.cacheLineSize << " | OffsetBitAmount " << sampleCache.offsetBitAmount << std::endl;
 	std::cout << "	EntrySize: " << sampleCache.entrySize << std::endl;
 
-	std::bitset<32> sample(x.addr);
-	std::cout << "	Address binary: " << sample << std::endl;
-	sampleCache.insert_read(x);
+	Request requests[] = {
+		{0, 42, 0},        // Read
+		{4, 56, 1},        // Write
+		{8, 72, 0},        // Read
+		{12, 15, 1},       // Write
+		{16, 99, 0},       // Read
+		{20, 3, 1},        // Write
+		{24, 88, 0},       // Read
+		{28, 45, 1},       // Write
+		{32, 67, 0},       // Read
+		{36, 128, 1},      // Write
+		{40, 256, 0},      // Read
+		{44, 512, 1},      // Write
+		{48, 1024, 0},     // Read
+		{52, 2048, 1},     // Write
+		{56, 4096, 0},     // Read
+		{60, 8192, 1},     // Write
+		{64, 16384, 0},    // Read
+		{68, 32768, 1},    // Write
+		{72, 65536, 0},    // Read
+		{76, 131072, 1},   // Write
+		{80, 262144, 0},   // Read
+		{84, 524288, 1},   // Write
+		{88, 1048576, 0},  // Read
+		{92, 2097152, 1},  // Write
+		{96, 4194304, 0},  // Read
+		{100, 8388608, 1}, // Write
+		{104, 16777216, 0},// Read
+		{108, 33554432, 1},// Write
+		{112, 67108864, 0},// Read
+		{116, 134217728, 1}// Write
+	};
+
+	for (auto request: requests) {
+		sampleCache.insert_read(request);
+	}
+
+
+	std::cout << "hits: " << sampleCache.hits << std::endl;
+	std::cout << "misses: " << sampleCache.misses << std::endl;
+	*/
+
+	MAIN_MEMORY main_memory("Main_memory");
+
+	sc_start();
 
 	
 	return 0;
