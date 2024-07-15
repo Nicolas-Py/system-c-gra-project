@@ -1,1 +1,4 @@
 .idea
+src/main.o
+src/modules.o
+cache_simulation
