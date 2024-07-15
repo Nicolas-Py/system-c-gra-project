@@ -80,9 +80,9 @@ struct Request* parse_csv(const char* path, size_t* num_requests) {
 
 int main(int argc, char* argv[]) {
     size_t num_requests;
-    struct Request* requests = parse_csv("input.csv", &num_requests);
+    struct Request* requests = parse_csv("src/input.csv", &num_requests);
     for (int i = 0; i < num_requests; i++) {
-        printf("Request number: %u, address: %u, data: %u, write/enable: %d", i + 1, requests[i].addr, requests[i].data, requests[i].we);
+        printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
     }
     free(requests);
     return 0;
