@@ -1,22 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-#include <errno.h>
-#include <limits.h>
-#include <string.h>
+#include "parse_csv.c"
+#include "print_usage.c"
 
-
-struct Request {
-	uint32_t addr ;
-	uint32_t data ;
-	int we ;
-};
 struct Result {
 	size_t cycles;
 	size_t misses;
 	size_t hits;
 	size_t primitiveGateCount;
 };
+
+
 extern struct Result run_simulation (
 	int cycles,
 	int directMapped,
@@ -31,20 +26,7 @@ extern struct Result run_simulation (
 
 
 
-// Function to print usage information
-void print_usage(const char* program_name) {
-    fprintf(stderr, "Usage: %s [OPTIONS] <input_file>\n", program_name);
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -c, --cycles <num>           Number of cycles to simulate\n");
-    fprintf(stderr, "  --directmapped               Simulate a direct-mapped cache\n");
-    fprintf(stderr, "  --fullassociative            Simulate a fully associative cache\n");
-    fprintf(stderr, "  --cacheline-size <num>       Size of a cache line in bytes\n");
-    fprintf(stderr, "  --cachelines <num>           Number of cache lines\n");
-    fprintf(stderr, "  --cache-latency <num>        Cache latency in cycles\n");
-    fprintf(stderr, "  --memory-latency <num>       Main memory latency in cycles\n");
-    fprintf(stderr, "  --tf=<filename>              Output tracefile with all signals\n");
-    fprintf(stderr, "  -h, --help                   Display this help message\n");
-}
+
 
 int main(int argc, char* argv[]) {
     // Default values
@@ -87,7 +69,6 @@ int main(int argc, char* argv[]) {
                 }
                 break;
             case 'd':
-                // toDo check for arg
                 if (f_flag) {
                     fprintf(stderr, "Error: You can only select either --directmapped or --fullassociative, not both.\n");
                     exit(1);
@@ -96,7 +77,6 @@ int main(int argc, char* argv[]) {
                 d_flag = 1;
                 break;
             case 'f':
-                // toDo check for arg
                 if (d_flag) {
                     fprintf(stderr, "Error: You can only select either --directmapped or --fullassociative, not both.\n");
                     exit(1);
@@ -152,6 +132,7 @@ int main(int argc, char* argv[]) {
 
     // Check for input file (positional argument)
     if (optind < argc) {
+        // inputfile represents the path
         inputfile = argv[optind];
     } else {
         fprintf(stderr, "Error: Input file is required.\n");
@@ -159,14 +140,18 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    // TODO: Read requests from inputfile
-    // For now, we'll use an empty array
-    struct Request requests[] = {};
-    size_t numRequests = 0;
+    size_t num_requests = 0;
+    struct Request* requests = parse_csv(inputfile, &num_requests);
+
 
     // Run the simulation
     struct Result res = run_simulation(cycles, directMapped, cacheLines, cacheLineSize,
-                                       cacheLatency, memoryLatency, numRequests, requests, tracefile);
+                                       cacheLatency, memoryLatency, num_requests, requests, tracefile);
+
+    // print csv (for testing)
+    for (int i = 0; i < num_requests; i++) {
+        printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
+    }
 
     // Print results
     printf("Simulation Results:\n");
