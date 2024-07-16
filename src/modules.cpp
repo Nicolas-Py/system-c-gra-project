@@ -77,14 +77,14 @@ struct Memory {
 
 	//testing:
 	void printMemory() {
-		for (const auto& [key, value] : memory) {
+		for (const auto& entry : memory) {
 			// Print the key
 			std::cout << "\nMemory lines: " << std::endl;
-			std::cout << "Key " << key << ": [";
+			std::cout << "Key " << entry.first << ": [";
 
 			// Print each element of the vector separated by "|"
 			bool first = true;
-			for (const auto& element : value) {
+			for (const auto& element : entry.second) {
 				if (first) {
 					first = false;
 				} else {
@@ -214,11 +214,11 @@ struct Cache {
 	//Test end
 
 };
-
+/*
 
 int sc_main(int argc, char* argv[]) {
 
-	/*
+
 	unsigned cacheLines = 8;
 	unsigned cacheLineSize = 32;
 	unsigned cacheLatency;
@@ -272,7 +272,7 @@ int sc_main(int argc, char* argv[]) {
 
 	std::cout << "hits: " << sampleCache.hits << std::endl;
 	std::cout << "misses: " << sampleCache.misses << std::endl;
-	*/
+
 
 	MAIN_MEMORY main_memory("Main_memory");
 
@@ -285,3 +285,4 @@ int sc_main(int argc, char* argv[]) {
     //std::cout << "ERROR" << std::endl;
     //return 1;
 }
+	*/
