@@ -75,6 +75,8 @@ struct Memory {
 	}
 
 
+
+
 	//testing:
 	void printMemory() {
 		for (const auto& [key, value] : memory) {
@@ -218,7 +220,8 @@ struct Cache {
 
 int sc_main(int argc, char* argv[]) {
 
-	/*
+
+
 	unsigned cacheLines = 8;
 	unsigned cacheLineSize = 32;
 	unsigned cacheLatency;
@@ -232,6 +235,8 @@ int sc_main(int argc, char* argv[]) {
 	std::cout << "	CacheLineSize: " << sampleCache.cacheLineSize << " | OffsetBitAmount " << sampleCache.offsetBitAmount << std::endl;
 	std::cout << "	EntrySize: " << sampleCache.entrySize << std::endl;
 
+
+	/*
 	Request requests[] = {
 		{0, 42, 0},        // Read
 		{4, 56, 1},        // Write
@@ -272,14 +277,25 @@ int sc_main(int argc, char* argv[]) {
 
 	std::cout << "hits: " << sampleCache.hits << std::endl;
 	std::cout << "misses: " << sampleCache.misses << std::endl;
+
 	*/
 
-	MAIN_MEMORY main_memory("Main_memory");
+	MAIN_MEMORY main_memory("main", cacheLineSize, cacheLineSize/sizeof(uint32_t), sizeof(uint32_t));
+
+	sc_signal<MEMORY_REQUEST> in;
+	sc_signal<Block> out;
+
+
+	MEMORY_REQUEST request(1, 2, 3);
+	in.write(request);
+	main_memory.request(in);
+	main_memory.out(out);
+
+
 
 	sc_start();
-
-	
-	return 0;
+	std::cout << out.read() << std::endl;;
+	std::cout << in.read() << std::endl;
 
 	return 0;
     //std::cout << "ERROR" << std::endl;
