@@ -10,10 +10,46 @@
 using namespace sc_core;
 
 struct Request {
-     uint32_t addr ;
-     uint32_t data ;
-     int we ;
+     uint32_t addr;
+     uint32_t data;
+     int we;
 };
+
+//own Memory request definition to be able to use sc_signal<Memory Request>
+struct MEMORY_REQUEST {
+	uint32_t addr;
+	uint32_t data;
+	int we;
+
+	MEMORY_REQUEST(): addr(0), data(0), we(0){}
+	MEMORY_REQUEST(uint32_t addr, uint32_t data, int we): addr(addr), data(data), we(we) {}
+
+	//overwritten the assignment operator
+	MEMORY_REQUEST& operator=(const MEMORY_REQUEST& request) {
+		addr = request.addr;
+		data = request.data;
+		we = request.we;
+		return *this;
+	}
+
+	//overitten the equality check opertor
+	bool operator==(const MEMORY_REQUEST& request) const {
+		return addr == request.addr && data == request.data && we == request.we;
+	}
+};
+
+// defined output for printing for example for std::cout on a sc_signal<MEMORY_REQUEST>
+inline std::ostream& operator<<(std::ostream& output, const MEMORY_REQUEST& request) {
+	output << "Request: " << request.addr << "\nData: " << request.data << "\nwe: " << request.we;
+	return output;
+}
+
+//defined how sc_trace should trace an sc_signal<Block>
+inline void sc_trace(sc_trace_file* file, const MEMORY_REQUEST& request, const std::string& name) {
+	sc_trace(file, request.addr, name + ".addr");
+	sc_trace(file, request.data, name + ".data");
+	sc_trace(file, request.we, name + ".we");
+}
 
 struct Result {
 	size_t cycles;
