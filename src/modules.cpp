@@ -139,6 +139,7 @@ struct Cache {
 	{}
 
 	void insert_read(Request request) {
+		//extract Tag index and offset bits
 		Offset offset = request.addr << (32-offsetBitAmount);
 		offset >>= (32-offsetBitAmount);
 
@@ -219,22 +220,20 @@ struct Cache {
 
 
 int sc_main(int argc, char* argv[]) {
-
-
-
 	unsigned cacheLines = 8;
 	unsigned cacheLineSize = 32;
 	unsigned cacheLatency;
 	unsigned memoryLatency;
 
 
+	/*
 	Cache sampleCache(cacheLines, cacheLineSize, 4);
 
 	std::cout << "\nCache stuff:" << std::endl;
 	std::cout << "	CacheLines: " << sampleCache.cacheLines << " | IndexBitAmount: " << sampleCache.indexBitAmount << std::endl;
 	std::cout << "	CacheLineSize: " << sampleCache.cacheLineSize << " | OffsetBitAmount " << sampleCache.offsetBitAmount << std::endl;
 	std::cout << "	EntrySize: " << sampleCache.entrySize << std::endl;
-
+	*/
 
 	/*
 	Request requests[] = {
@@ -280,22 +279,55 @@ int sc_main(int argc, char* argv[]) {
 
 	*/
 
+	/*
 	MAIN_MEMORY main_memory("main", cacheLineSize, cacheLineSize/sizeof(uint32_t), sizeof(uint32_t));
 
 	sc_signal<MEMORY_REQUEST> in;
 	sc_signal<Block> out;
 
-
 	MEMORY_REQUEST request(1, 2, 3);
-	in.write(request);
 	main_memory.request(in);
 	main_memory.out(out);
 
+	for (int i=0; i<10; i++) {
+		request.data+=10;
+		in.write(request);
 
-
-	sc_start();
+		sc_start(10, SC_SEC);
+	}
 	std::cout << out.read() << std::endl;;
 	std::cout << in.read() << std::endl;
+
+	std::cout << main_memory.count;
+	*/
+
+	/*
+	std::cout << "\nCache stuff:" << std::endl;
+	std::cout << "	CacheLines: " << direct_mapped_cache.cacheLines << " | IndexBitAmount: " << direct_mapped_cache.indexBitAmount << std::endl;
+	std::cout << "	CacheLineSize: " << direct_mapped_cache.cacheLineSize << " | OffsetBitAmount " << direct_mapped_cache.offsetBitAmount << std::endl;
+	std::cout << "	EntrySize: " << direct_mapped_cache.entrySize << std::endl;
+
+	*/
+
+
+	DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
+	std::cout << "\nCache stuff:" << std::endl;
+	std::cout << "	CacheLines: " << direct.cacheLines << " | IndexBitAmount: " << direct.indexBitAmount << std::endl;
+	std::cout << "	CacheLineSize: " << direct.cacheLineSize << " | OffsetBitAmount " << direct.offsetBitAmount << std::endl;
+	std::cout << "	EntrySize: " << direct.entrySize << std::endl;
+
+	sc_signal<MEMORY_REQUEST> request;
+	sc_signal<int> hit;
+
+	direct.request(request);
+	direct.out(hit);
+
+	request.write(MEMORY_REQUEST{100, 2, 0, 0});
+	sc_start(1, SC_SEC);
+
+	request.write(MEMORY_REQUEST{0, 100, 0, 1});
+	sc_start(1, SC_SEC);
+
 
 	return 0;
     //std::cout << "ERROR" << std::endl;
