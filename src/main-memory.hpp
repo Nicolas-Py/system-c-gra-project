@@ -56,7 +56,7 @@ SC_MODULE(MAIN_MEMORY) {
     typedef uint32_t Index;
     typedef uint32_t Offset;
 
-    uint32_t cacheLineSize;
+    uint32_t cacheLineSize; // chacheline size in byte
     uint32_t blockAmount; // amount of values a cache line can store
     uint32_t offsetBitAmount;
     uint32_t entrySize; // size of a cache entry
@@ -69,8 +69,9 @@ SC_MODULE(MAIN_MEMORY) {
     Block returnBlock;
 
     sc_in<MEMORY_REQUEST> request;
-    sc_out<Block> out;
+    sc_out<Block> out; //memory block send to the cache
 
+    sc_event blockUpdated; //notifies the cache that the block is ready to be send over
 
     SC_CTOR(MAIN_MEMORY);
     MAIN_MEMORY(sc_module_name name, uint32_t cacheLineSize, uint32_t blockAmount, uint32_t entrySize):
@@ -88,7 +89,6 @@ SC_MODULE(MAIN_MEMORY) {
 
     void update() {
         while(true) {
-
             //extract tag-index bits for key in hashmap and offset for index in the vector
             Address tag_index = request.read().addr >> offsetBitAmount;
             Offset offset = request.read().addr << (32-offsetBitAmount);
@@ -112,11 +112,12 @@ SC_MODULE(MAIN_MEMORY) {
                 memory[tag_index][offset] = request.read().data;
             }
 
-            //block to replace the cacheline with
+            //update block to replace the cacheline with
             returnBlock.block = extractBlock(offset, tag_index);
 
             printMemory();
             out.write(returnBlock);
+            blockUpdated.notify(SC_ZERO_TIME); //notifies the cache that the block is ready to send over
             wait();
         }
     }
@@ -129,12 +130,10 @@ SC_MODULE(MAIN_MEMORY) {
 
     //testing:
     void printMemory() {
+        std::cout << "\nMemory lines: " << std::endl;
         for (const auto& [key, value] : memory) {
-            // Print the key
-            std::cout << "\nMemory lines: " << std::endl;
             std::cout << "Key " << key << ": [";
 
-            // Print each element of the vector separated by "|"
             bool first = true;
             for (const auto& element : value) {
                 if (first) {
