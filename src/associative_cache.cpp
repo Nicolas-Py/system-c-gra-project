@@ -228,9 +228,10 @@ struct Associative_Cache {
                 line->line = memory.insert(request);
                 misses++;
             }
-            std::cout << "\nValue for address " << request.addr << ": " << line->line[offset/entrySize] << std::endl;
-            cycles++;
+
         }
+        std::cout << "\nValue for address " << request.addr << ": " << line->line[offset/entrySize] << std::endl;
+        cycles++;
         line->lastAccess = cycles;
 
 
@@ -258,7 +259,7 @@ struct Associative_Cache {
             for (uint32_t entry : cacheLine.line) {
                 std::cout << " " << entry << ",";
              }
-            std::cout << "]" << std::endl;
+            std::cout << "] " << "LRU count: " << cacheLine.lastAccess << std::endl;
         }
     }
 
@@ -266,6 +267,7 @@ struct Associative_Cache {
 };
 
 int sc_main(int argc, char* argv[]) {
+    /*
 
     unsigned cacheLine = 8;
     unsigned cacheLineSize = 32;
@@ -278,13 +280,48 @@ int sc_main(int argc, char* argv[]) {
     std::cout << "Entry size: " << associative_cache.entrySize << std::endl;
 
     Request requests[] = {
-        {0xABCD, 0x1234, 1},
-        {0xABCD, 0, 0}
+        {0x1000, 0xABCD, 1},
+        {0x1020, 0x1234, 1},
+        {0x1040, 0x5678, 1},
+        {0x1060, 0x9ABC, 1},
+        {0x1080, 0xDEF0, 1},
+        {0x10A0, 0x4567, 1},
+        {0x10C0, 0x89AB, 1},
+        {0x10E0, 0xCDEF, 1},
+
+
+        {0x1000, 0, 0},
+        {0x1004, 0x1111, 1},
+        {0x1008, 0x1112, 1},
+        {0x100C, 0x1113, 1},
+        {0x1010, 0x1114, 1},
+        {0x1014, 0x1115, 1},
+        {0x1018, 0x1116, 1},
+        {0x101C, 0x1117, 1},
+        {0x1000, 0x1123AB10, 1}
+        //{0x1010, 0, 0},
+        //{0x1020, 0, 0},
+        //{0x1030, 0, 0},
+        //{0x1080, 0x1234, 1},
+        //{0x1090, 0x5678, 1},
+        //{0x10A0, 0x9ABC, 1},
+       // {0x10B0, 0xDEF0, 1},
+        //{0x10C0, 0x4567, 1},
+        //{0x10D0, 0x89AB, 1},
+        //{0x10E0, 0xCDEF, 1},
+        //{0x10F0, 0x1357, 1},
+        //{0x20000, 0x1111, 1},
+        //{0x20004, 0x1322, 1}
+
+
+        // Add more requests as needed
+
     };
 
     for (auto request : requests) {
         associative_cache.insert_read(request);
     }
+    */
 
 
     return 0;
