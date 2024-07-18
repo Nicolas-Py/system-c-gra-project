@@ -102,7 +102,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                         out.write(1);
                         hits++;
                     } else {
-                        
+
                     }
                 } else {
 
