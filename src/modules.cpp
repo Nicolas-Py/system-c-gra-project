@@ -20,7 +20,6 @@ Result run_simulation (
 	const char * tracefile
 )
 {
-
 	if (directMapped) {
 		DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
 		sc_signal<MEMORY_REQUEST> request;
@@ -81,9 +80,10 @@ Result run_simulation (
 				cyclesCount = SIZE_MAX;
 				break;
 			}
-			Result testResult = {cyclesCount, misses, hits, 1};
-			return testResult;
+
 		}
+		Result testResult = {cyclesCount, misses, hits, 1};
+		return testResult;
 	}
 }
 

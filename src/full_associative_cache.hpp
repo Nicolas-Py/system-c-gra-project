@@ -32,7 +32,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
     int offsetBitAmount;
     sc_in<MEMORY_REQUEST> request;
     sc_out<int> out;
-    int hits, misses;
+    int hits = 0, misses = 0;
 
     MAIN_MEMORY main_memory;
     sc_signal<MEMORY_REQUEST> update_memory_request;
@@ -142,7 +142,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                     misses++;
                 }
             }
-            line->lastAccess = sc_time_stamp().value();
+            line->lastAccess = misses+hits;
 
 
             std::bitset<32> Tag(data_tag);
