@@ -49,16 +49,16 @@ def run_tests(executable, num_tests):
         print(f"Running test {test_num + 1}/{num_tests}")
 
         # Generate random parameters
-        cycles = random.randint(100000, 1000000)
+        cycles = random.randint(100000, 100000000)
         direct_mapped = random.choice([True, False])
         cache_lines = random.choice([32, 64, 128, 256])
         cache_line_size = random.choice([32, 64, 128])
         cache_latency = random.randint(1, 10)
         memory_latency = random.randint(50, 200)
-        num_instructions = random.randint(100, 1000)
+        num_instructions = random.randint(1000, 10000)
 
         # Generate input file
-        input_file = f"test_input_{test_num}.csv"
+        input_file = f"../test_files/factory_out/test_input_{test_num}.csv"
         generate_csv(input_file, num_instructions)
 
         # Run simulation
@@ -107,6 +107,6 @@ def run_tests(executable, num_tests):
 
 if __name__ == "__main__":
     executable_path = "../cache_simulation"  # Update this with the path to your compiled C program
-    num_tests = 100000  # Number of tests to run
+    num_tests = 100  # Number of tests to run
 
     run_tests(executable_path, num_tests)
