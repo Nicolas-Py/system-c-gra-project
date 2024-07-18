@@ -138,6 +138,7 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
 
 
             //Testing:
+            /*
             std::bitset<32> Tag(tag);
             std::bitset<32> Index(index);
             std::bitset<32> Offset(offset);
@@ -151,6 +152,7 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
             std::cout << "\nCache lines:" << std::endl;
             printCache();
             std::cout << "Misses: " << misses  << " | Hits: " << hits << std::endl;
+            */
             //Test end
 
             wait();

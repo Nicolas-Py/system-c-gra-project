@@ -30,11 +30,11 @@ extern struct Result run_simulation (
 
 int main(int argc, char* argv[]) {
     // Default values
-    int cycles = 1000;  // Default number of cycles
+    int cycles = 100000;  // Default number of cycles
     int directMapped = 1;  // Default to direct-mapped cache
-    unsigned cacheLines = 64;  // Default number of cache lines
-    unsigned cacheLineSize = 64;  // Default cache line size in bytes
-    unsigned cacheLatency = 1;  // Default cache latency in cycles
+    unsigned cacheLines = 8;  // Default number of cache lines
+    unsigned cacheLineSize = 32;  // Default cache line size in bytes
+    unsigned cacheLatency = 5;  // Default cache latency in cycles
     unsigned memoryLatency = 100;  // Default memory latency in cycles
     char* tracefile = NULL;
     char* inputfile = NULL;
@@ -57,7 +57,6 @@ int main(int argc, char* argv[]) {
     int c;
     int d_flag = 0;
     int f_flag = 0;
-
 
     while ((c = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
         switch (c) {
@@ -148,10 +147,11 @@ int main(int argc, char* argv[]) {
     struct Result res = run_simulation(cycles, directMapped, cacheLines, cacheLineSize,
                                        cacheLatency, memoryLatency, num_requests, requests, tracefile);
 
+
     // print csv (for testing)
-    for (int i = 0; i < num_requests; i++) {
-        printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
-    }
+    //for (int i = 0; i < num_requests; i++) {
+      //  printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
+    //}
 
     // Print results
     printf("Simulation Results:\n");
@@ -159,6 +159,8 @@ int main(int argc, char* argv[]) {
     printf("Cache hits: %zu\n", res.hits);
     printf("Cache misses: %zu\n", res.misses);
     printf("Primitive gate count: %zu\n", res.primitiveGateCount);
+
+    free(requests);
 
     return 0;
 }

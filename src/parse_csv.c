@@ -9,6 +9,8 @@
 #include <string.h>
 #include "parse_csv.h"
 
+
+
 size_t line_count(const char* path) {
     FILE* file = fopen(path, "r");
     if (file == NULL) {
@@ -36,9 +38,8 @@ struct Request* parse_csv(const char* path, size_t* num_requests) {
         return NULL;
     }
 
-
     *num_requests = line_count(path);
-    struct Request* requests = (struct Request *)malloc(*num_requests);
+    struct Request* requests = (struct Request *)malloc(*num_requests * sizeof(struct Request));
 
     if (requests == NULL) {
         perror("Failed to allocate memory");
