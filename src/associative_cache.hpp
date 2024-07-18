@@ -13,6 +13,19 @@
 
 using namespace sc_core;
 
+extern "C" struct Result run_simulation (
+    int cycles,
+    int directMapped,
+    unsigned cacheLines,
+    unsigned cacheLineSize,
+    unsigned cacheLatency,
+    unsigned memoryLatency,
+    size_t numRequests,
+    Request requests[numRequests],
+    const char * tracefile
+);
+
+
 SC_MODULE(ASSOCIATIVE_CACHE) {
     typedef uint32_t Address;
     typedef uint32_t Offset;
@@ -43,6 +56,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
     sc_signal<Block> memory_block;
 
     SC_CTOR(ASSOCIATIVE_CACHE);
+
     ASSOCIATIVE_CACHE(sc_module_name name, unsigned cacheLines, unsigned cacheLineSize, int entrySize):
     sc_module(name),
     cacheLines(cacheLines),
@@ -181,16 +195,8 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
 
 
 
-extern "C" struct Result run_simulation (
-    int cycles,
-    int directMapped,
-    unsigned cacheLines,
-    unsigned cacheLineSize,
-    unsigned cacheLatency,
-    unsigned memoryLatency,
-    size_t numRequests,
-    Request requests[numRequests],
-    const char * tracefile
-);
+
+
+
 
 #endif //ASSOCIATIVE_CACHE_H

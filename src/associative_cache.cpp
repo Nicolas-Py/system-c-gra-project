@@ -4,7 +4,7 @@
 
 #include <unordered_map>
 #include "associative_cache.hpp"
-
+#include "main-memory.hpp"
 #include "modules.hpp"
 
 Result run_simulation (
@@ -267,17 +267,19 @@ struct Associative_Cache {
 };
 
 int sc_main(int argc, char* argv[]) {
-    /*
+
 
     unsigned cacheLine = 8;
     unsigned cacheLineSize = 32;
     int entrySize = 4;
 
-    Associative_Cache associative_cache(cacheLine, cacheLineSize, entrySize);
+
+    /*
 
     std::cout << "Cache line size: " << associative_cache.cacheLineSize << ", Offset bits: " << associative_cache.offsetBitAmount << std::endl;
     std::cout << "Number of cache lines: " << associative_cache.cacheLines << std::endl;
     std::cout << "Entry size: " << associative_cache.entrySize << std::endl;
+    */
 
     Request requests[] = {
         {0x1000, 0xABCD, 1},
@@ -290,15 +292,15 @@ int sc_main(int argc, char* argv[]) {
         {0x10E0, 0xCDEF, 1},
 
 
-        {0x1000, 0, 0},
-        {0x1004, 0x1111, 1},
-        {0x1008, 0x1112, 1},
-        {0x100C, 0x1113, 1},
-        {0x1010, 0x1114, 1},
-        {0x1014, 0x1115, 1},
-        {0x1018, 0x1116, 1},
-        {0x101C, 0x1117, 1},
-        {0x1000, 0x1123AB10, 1}
+        {0x1000, 0, 0}
+       // {0x1004, 0x1111, 1},
+       // {0x1008, 0x1112, 1},
+       // {0x100C, 0x1113, 1},
+        //{0x1010, 0x1114, 1},
+        //{0x1014, 0x1115, 1},
+        //{0x1018, 0x1116, 1},
+        //{0x101C, 0x1117, 1},
+        //{0x1000, 0x1123AB10, 1}
         //{0x1010, 0, 0},
         //{0x1020, 0, 0},
         //{0x1030, 0, 0},
@@ -316,12 +318,43 @@ int sc_main(int argc, char* argv[]) {
 
         // Add more requests as needed
 
+
     };
 
-    for (auto request : requests) {
-        associative_cache.insert_read(request);
-    }
-    */
+
+
+
+    ASSOCIATIVE_CACHE associative_cache("associative", cacheLine, cacheLineSize, sizeof(uint32_t));
+    std::cout << "\nCache:" << std::endl;
+    std::cout << "          Cache lines: " << associative_cache.cacheLines << std::endl;
+    std::cout << "          Cache line size: " << associative_cache.cacheLineSize << "  Offset bits: " << associative_cache.offsetBitAmount << std::endl;
+    std::cout << "          Entry size: " << associative_cache.entrySize << std::endl;
+
+    MAIN_MEMORY main_memory("main", cacheLineSize, cacheLineSize/entrySize, sizeof(uint32_t));
+
+    sc_signal<MEMORY_REQUEST> request;
+    sc_signal<int> hits;
+    sc_signal<int> misses;
+    sc_signal<Block> out;
+
+    associative_cache.request(request);
+    associative_cache.out(hits);
+    //associative_cache.out(misses);
+
+
+
+    request.write(MEMORY_REQUEST{1000, 0x1111, 1, 1});
+    sc_start(1, SC_SEC);
+
+    request.write(MEMORY_REQUEST{0x1020, 0x1112, 1, 2});
+    sc_start(1, SC_SEC);
+
+    request.write(MEMORY_REQUEST{0x1000, 0, 0, 3});
+    sc_start(1, SC_SEC);
+
+
+
+
 
 
     return 0;
