@@ -20,39 +20,38 @@ Result run_simulation (
 )
 {
 
+	if (directMapped) {
+		DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
+		sc_signal<MEMORY_REQUEST> request;
+		sc_signal<int> hit;
 
-	DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
-	sc_signal<MEMORY_REQUEST> request;
-	sc_signal<int> hit;
+		size_t hits = 0;
+		size_t misses = 0;
+		size_t cyclesCount = 0;
 
-	size_t hits = 0;
-	size_t misses = 0;
-	size_t cyclesCount = 0;
+		direct.request(request);
+		direct.out(hit);
 
-	direct.request(request);
-	direct.out(hit);
-
-	for (int i = 0; i < numRequests; i++) {
-		printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
-		request.write(MEMORY_REQUEST{requests[i].addr, requests[i].data, requests[i].we, i});
-		sc_start(1, SC_SEC);
-		if (hit.read()) {
-			hits++;
-			cyclesCount += cacheLatency;
-		} else {
-			misses++;
-			cyclesCount += cacheLatency;
-			cyclesCount += memoryLatency;
+		for (int i = 0; i < numRequests; i++) {
+			printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
+			request.write(MEMORY_REQUEST{requests[i].addr, requests[i].data, requests[i].we, i});
+			sc_start(1, SC_SEC);
+			if (hit.read()) {
+				hits++;
+				cyclesCount += cacheLatency;
+			} else {
+				misses++;
+				cyclesCount += cacheLatency;
+				cyclesCount += memoryLatency;
+			}
+			if (cyclesCount>cycles) {
+				cyclesCount = SIZE_MAX;
+				break;
+			}
 		}
-		if (cyclesCount>cycles) {
-			cyclesCount = SIZE_MAX;
-			break;
-		}
+		Result testResult = {cyclesCount, misses, hits, 1};
+		return testResult;
 	}
-
-
-	Result testResult = {cyclesCount, misses, hits, 1};
-	return testResult;
 }
 
 struct Memory {

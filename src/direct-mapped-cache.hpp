@@ -132,7 +132,7 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
                    cache[index].occupied = true;
                    cache[index].line = memoryBlock.read().block;
                    out.write(0);
-
+                   misses++;
                }
            }
 
