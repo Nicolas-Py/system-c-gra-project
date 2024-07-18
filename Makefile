@@ -30,7 +30,6 @@ CXXFLAGS := -std=c++14  -I$(SCPATH)/include -L$(SCPATH)/lib -lsystemc -lm
 #configuartion end
 #------------------------
 
-
 #check for clang or gcc
 CXX := $(shell command -v g++ || command -v clang++)
 ifeq ($(strip $(CXX)),)

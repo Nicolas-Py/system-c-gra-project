@@ -19,8 +19,40 @@ Result run_simulation (
 	const char * tracefile
 )
 {
-	Result testResult = {1, 1, 1, 1};
-    return testResult;
+
+
+	DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
+	sc_signal<MEMORY_REQUEST> request;
+	sc_signal<int> hit;
+
+	size_t hits = 0;
+	size_t misses = 0;
+	size_t cyclesCount = 0;
+
+	direct.request(request);
+	direct.out(hit);
+
+	for (int i = 0; i < numRequests; i++) {
+		printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
+		request.write(MEMORY_REQUEST{requests[i].addr, requests[i].data, requests[i].we, i});
+		sc_start(1, SC_SEC);
+		if (hit.read()) {
+			hits++;
+			cyclesCount += cacheLatency;
+		} else {
+			misses++;
+			cyclesCount += cacheLatency;
+			cyclesCount += memoryLatency;
+		}
+		if (cyclesCount>cycles) {
+			cyclesCount = SIZE_MAX;
+			break;
+		}
+	}
+
+
+	Result testResult = {cyclesCount, misses, hits, 1};
+	return testResult;
 }
 
 struct Memory {
@@ -311,10 +343,12 @@ int sc_main(int argc, char* argv[]) {
 
 
 	DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
+	/*
 	std::cout << "\nCache stuff:" << std::endl;
 	std::cout << "	CacheLines: " << direct.cacheLines << " | IndexBitAmount: " << direct.indexBitAmount << std::endl;
 	std::cout << "	CacheLineSize: " << direct.cacheLineSize << " | OffsetBitAmount " << direct.offsetBitAmount << std::endl;
 	std::cout << "	EntrySize: " << direct.entrySize << std::endl;
+	*/
 
 	sc_signal<MEMORY_REQUEST> request;
 	sc_signal<int> hit;
@@ -322,10 +356,10 @@ int sc_main(int argc, char* argv[]) {
 	direct.request(request);
 	direct.out(hit);
 
-	request.write(MEMORY_REQUEST{100, 2, 0, 0});
+	//request.write(MEMORY_REQUEST{100, 2, 0, 0});
 	sc_start(1, SC_SEC);
 
-	request.write(MEMORY_REQUEST{0, 100, 0, 1});
+	//request.write(MEMORY_REQUEST{0, 100, 0, 1});
 	sc_start(1, SC_SEC);
 
 

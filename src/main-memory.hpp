@@ -95,11 +95,13 @@ SC_MODULE(MAIN_MEMORY) {
             offset >>= (32-offsetBitAmount);
 
             //Testing:
+            /*
             std::bitset<32> TAG_INDEX(tag_index);
             std::bitset<32> Offset(offset);
             std:: cout << "\nMemory stuff: " << std::endl;
             std::cout << "	Tag_Index: " << TAG_INDEX << " | Decimal: " << tag_index << std::endl;
             std::cout << "	Offset: " << Offset << " | Decimal: " << offset << std::endl;
+            */
             //test end
 
             //if tag-index is not yet found in the memory create a vector for addresses of that combination
@@ -115,7 +117,7 @@ SC_MODULE(MAIN_MEMORY) {
             //update block to replace the cacheline with
             returnBlock.block = extractBlock(offset, tag_index);
 
-            printMemory();
+            // printMemory();
             out.write(returnBlock);
             blockUpdated.notify(SC_ZERO_TIME); //notifies the cache that the block is ready to send over
             wait();
