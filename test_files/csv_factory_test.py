@@ -2,6 +2,7 @@ import subprocess
 import random
 import csv
 import os
+import time
 
 
 def generate_csv(filename, num_instructions):
@@ -61,11 +62,14 @@ def run_tests(executable, num_tests):
         input_file = f"../test_files/factory_out/test_input_{test_num}.csv"
         generate_csv(input_file, num_instructions)
 
-        # Run simulation
+        # Run simulation and measure time
+        start_time = time.time()
         stdout, stderr = run_simulation(
             executable, cycles, direct_mapped, cache_lines,
             cache_line_size, cache_latency, memory_latency, input_file
         )
+        end_time = time.time()
+        test_duration = end_time - start_time
 
         if stderr:
             print(f"Error in test {test_num + 1}:")
@@ -81,19 +85,24 @@ def run_tests(executable, num_tests):
             for key in expected_keys:
                 assert key in results, f"{key} not found in output"
 
-
             assert results['Cache hits'] + results['Cache misses'] <= num_instructions, "Total cache accesses exceed number of instructions"
             assert results['Primitive gate count'] > 0, "Primitive gate count should be positive"
 
             hit_ratio = results['Cache hits'] / (results['Cache hits'] + results['Cache misses'])
-            print(f"Cache hit ratio: {hit_ratio:.2f}")
+
+            # Print test details
+            print(f"Test {test_num + 1} details:")
+            print(f"  Duration: {test_duration:.2f} seconds")
+            print(f"  Input file: {input_file}")
+            print(f"  Cache type: {'Direct-mapped' if direct_mapped else 'Fully Associative'}")
+            print(f"  Cache hit ratio: {hit_ratio:.2f}")
+            print(f"Results: {results}")
 
             # Additional checks based on cache configuration
             if direct_mapped:
                 assert results['Cache hits'] + results['Cache misses'] <= cache_lines * cycles, "Total accesses exceed maximum possible for direct-mapped cache"
 
             print(f"Test {test_num + 1} passed")
-            print(f"Results: {results}")
         except AssertionError as e:
             print(f"Test {test_num + 1} failed: {str(e)}")
         except Exception as e:
@@ -102,7 +111,7 @@ def run_tests(executable, num_tests):
         print("---")
 
         # Clean up input file
-        os.remove(input_file)
+        # os.remove(input_file)
 
 
 if __name__ == "__main__":

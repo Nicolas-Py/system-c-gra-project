@@ -3,8 +3,10 @@ import random
 import string
 import csv
 
+
 def generate_random_string(length):
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+
 
 def create_valid_input_file(filename, num_instructions):
     operations = ['R', 'W']
