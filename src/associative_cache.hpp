@@ -102,10 +102,23 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                         out.write(1);
                         hits++;
                     } else {
+                        update_memory_request.write(req);
+                        wait(main_memory.blockUpdated);
 
+                        line->tag = data_tag;
+                        line->line = memory_block.read().block;
+                        out.write(0);
+                        misses++;
                     }
                 } else {
+                    update_memory_request.write(req);
+                    wait(main_memory.blockUpdated);
 
+                    line->occupied = true;
+                    line->tag = data_tag;
+                    line->line = memory_block.read().block;
+                    out.write(0);
+                    misses++;
                 }
             } else {
                 if (line->occupied) {
@@ -132,11 +145,37 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                     misses++;
                 }
             }
+            line->lastAccess = sc_time_stamp().value();
 
+
+            std::bitset<32> Tag(data_tag);
+            std::bitset<32> Offset(offset);
+            std::bitset<32> Address(request.read().addr);
+
+            std::cout << "\nCacheStuff: " << std::endl;
+            std::cout << "	Address binary: " << Address << " | Decimal: " << request.read().addr << std::endl;
+            std::cout << "	Tag: " << Tag << " | Decimal: " << data_tag << std::endl;
+            std::cout << "	Offset: " << Offset << " | Decimal: " << offset << std::endl;
+            std::cout << "\nCache lines:" << std::endl;
+            printCache();
+            std::cout << "Misses: " << misses  << " | Hits: " << hits << std::endl;
+            //Test end
+
+            wait();
         }
     }
 
 
+
+    void printCache() {
+        for (CacheLine cacheLine: cache) {
+            std::cout << "Tag " << cacheLine.tag << ": [";
+            for (uint32_t entry : cacheLine.line) {
+                std::cout << " " << entry << ",";
+            }
+            std::cout<< "] " << "LRU count: " << cacheLine.lastAccess << std::endl;
+        }
+    }
 
 };
 
