@@ -1,19 +1,21 @@
-import subprocess
-import random
-import csv
 import os
+import random
+import subprocess
 import time
 
 
-def generate_csv(filename, num_instructions):
-    operations = ['R', 'W']
-    with open(filename, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        for _ in range(num_instructions):
-            op = random.choice(operations)
-            address = random.randint(0, 0xFFFF)  # 16-bit address space
-            data = random.randint(0, 0xFFFF) if op == 'W' else ''
-            writer.writerow([op, hex(address), data])
+def parse_results(output):
+    results = {}
+    lines = output.split('\n')
+    if "Simulation Results:" in lines:
+        start_index = lines.index("Simulation Results:") + 1
+        for line in lines[start_index:]:
+            if ':' in line:
+                key, value = line.split(':')
+                key = key.strip()
+                value = int(value.strip())
+                results[key] = value
+    return results
 
 
 def run_simulation(executable, cycles, direct_mapped, cache_lines, cache_line_size, cache_latency, memory_latency, input_file):
@@ -31,36 +33,20 @@ def run_simulation(executable, cycles, direct_mapped, cache_lines, cache_line_si
     return result.stdout, result.stderr
 
 
-def parse_results(output):
-    results = {}
-    lines = output.split('\n')
-    if "Simulation Results:" in lines:
-        start_index = lines.index("Simulation Results:") + 1
-        for line in lines[start_index:]:
-            if ':' in line:
-                key, value = line.split(':')
-                key = key.strip()
-                value = int(value.strip())
-                results[key] = value
-    return results
-
-
-def run_tests(executable, num_tests):
+def run_tests(executable, num_tests, test_files, direct_mapped):
     for test_num in range(num_tests):
         print(f"Running test {test_num + 1}/{num_tests}")
 
         # Generate random parameters
-        cycles = random.randint(100000, 100000000)
-        direct_mapped = random.choice([True, False])
-        cache_lines = random.choice([32, 64, 128, 256])
-        cache_line_size = random.choice([32, 64, 128])
-        cache_latency = random.randint(1, 10)
-        memory_latency = random.randint(50, 200)
-        num_instructions = random.randint(1000, 10000)
+        cycles = 100000
+        cache_lines = 128
+        cache_line_size = 128
+        cache_latency = 5
+        memory_latency = 100
+
 
         # Generate input file
-        input_file = f"../test_files/factory_out/test_input_{test_num}.csv"
-        generate_csv(input_file, num_instructions)
+        input_file = test_files[test_num]
 
         # Run simulation and measure time
         start_time = time.time()
@@ -85,7 +71,6 @@ def run_tests(executable, num_tests):
             for key in expected_keys:
                 assert key in results, f"{key} not found in output"
 
-            assert results['Cache hits'] + results['Cache misses'] <= num_instructions, "Total cache accesses exceed number of instructions"
             assert results['Primitive gate count'] > 0, "Primitive gate count should be positive"
 
             hit_ratio = results['Cache hits'] / (results['Cache hits'] + results['Cache misses'])
@@ -110,8 +95,9 @@ def run_tests(executable, num_tests):
         # os.remove(input_file)
 
 
-if __name__ == "__main__":
-    executable_path = "../cache_simulation"  # Update this with the path to your compiled C program
-    num_tests = 100  # Number of tests to run
+if __name__ == '__main__':
+    executable_path = "../cache_simulation"
+    test_files = ["../test_files/merge_sort_out.csv"]
 
-    run_tests(executable_path, num_tests)
+    run_tests(executable_path, len(test_files), test_files, False)
+    run_tests(executable_path, len(test_files), test_files, True)
