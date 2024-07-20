@@ -38,7 +38,7 @@ def run_tests(executable, num_tests, test_files, direct_mapped):
         print(f"Running test {test_num + 1}/{num_tests}")
 
         # Generate random parameters
-        cycles = random.randint(10000, 100000)
+        cycles = 100000
         cache_lines = 128
         cache_line_size = 128
         cache_latency = 5

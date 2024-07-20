@@ -21,6 +21,7 @@ Result run_simulation (
 )
 {
 	if (directMapped) {
+		printf("DIRECT_MAPPED_CACHE\n");
 		DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
 		sc_signal<MEMORY_REQUEST> request;
 		sc_signal<int> hit;
@@ -52,7 +53,7 @@ Result run_simulation (
 		Result testResult = {cyclesCount, misses, hits, 1};
 		return testResult;
 	} else {
-
+		printf("ASSOCIATIVE_CACHE\n");
 		ASSOCIATIVE_CACHE associative_cache("associative", cacheLines, cacheLineSize, sizeof(uint32_t));
 		sc_signal<MEMORY_REQUEST> request;
 		sc_signal<int> hit;
@@ -284,118 +285,6 @@ struct Cache {
 
 
 int sc_main(int argc, char* argv[]) {
-	unsigned cacheLines = 8;
-	unsigned cacheLineSize = 32;
-	unsigned cacheLatency;
-	unsigned memoryLatency;
-
-
-	/*
-	Cache sampleCache(cacheLines, cacheLineSize, 4);
-
-	std::cout << "\nCache stuff:" << std::endl;
-	std::cout << "	CacheLines: " << sampleCache.cacheLines << " | IndexBitAmount: " << sampleCache.indexBitAmount << std::endl;
-	std::cout << "	CacheLineSize: " << sampleCache.cacheLineSize << " | OffsetBitAmount " << sampleCache.offsetBitAmount << std::endl;
-	std::cout << "	EntrySize: " << sampleCache.entrySize << std::endl;
-	*/
-
-	/*
-	Request requests[] = {
-		{0, 42, 0},        // Read
-		{4, 56, 1},        // Write
-		{8, 72, 0},        // Read
-		{12, 15, 1},       // Write
-		{16, 99, 0},       // Read
-		{20, 3, 1},        // Write
-		{24, 88, 0},       // Read
-		{28, 45, 1},       // Write
-		{32, 67, 0},       // Read
-		{36, 128, 1},      // Write
-		{40, 256, 0},      // Read
-		{44, 512, 1},      // Write
-		{48, 1024, 0},     // Read
-		{52, 2048, 1},     // Write
-		{56, 4096, 0},     // Read
-		{60, 8192, 1},     // Write
-		{64, 16384, 0},    // Read
-		{68, 32768, 1},    // Write
-		{72, 65536, 0},    // Read
-		{76, 131072, 1},   // Write
-		{80, 262144, 0},   // Read
-		{84, 524288, 1},   // Write
-		{88, 1048576, 0},  // Read
-		{92, 2097152, 1},  // Write
-		{96, 4194304, 0},  // Read
-		{100, 8388608, 1}, // Write
-		{104, 16777216, 0},// Read
-		{108, 33554432, 1},// Write
-		{112, 67108864, 0},// Read
-		{116, 134217728, 1}// Write
-	};
-
-	for (auto request: requests) {
-		sampleCache.insert_read(request);
-	}
-
-
-	std::cout << "hits: " << sampleCache.hits << std::endl;
-	std::cout << "misses: " << sampleCache.misses << std::endl;
-
-	*/
-
-	/*
-	MAIN_MEMORY main_memory("main", cacheLineSize, cacheLineSize/sizeof(uint32_t), sizeof(uint32_t));
-
-	sc_signal<MEMORY_REQUEST> in;
-	sc_signal<Block> out;
-
-	MEMORY_REQUEST request(1, 2, 3);
-	main_memory.request(in);
-	main_memory.out(out);
-
-	for (int i=0; i<10; i++) {
-		request.data+=10;
-		in.write(request);
-
-		sc_start(10, SC_SEC);
-	}
-	std::cout << out.read() << std::endl;;
-	std::cout << in.read() << std::endl;
-
-	std::cout << main_memory.count;
-	*/
-
-	/*
-	std::cout << "\nCache stuff:" << std::endl;
-	std::cout << "	CacheLines: " << direct_mapped_cache.cacheLines << " | IndexBitAmount: " << direct_mapped_cache.indexBitAmount << std::endl;
-	std::cout << "	CacheLineSize: " << direct_mapped_cache.cacheLineSize << " | OffsetBitAmount " << direct_mapped_cache.offsetBitAmount << std::endl;
-	std::cout << "	EntrySize: " << direct_mapped_cache.entrySize << std::endl;
-
-	*/
-
-
-	DIRECT_MAPPED_CACHE direct("direct", cacheLines, cacheLineSize, sizeof(uint32_t));
-	/*
-	std::cout << "\nCache stuff:" << std::endl;
-	std::cout << "	CacheLines: " << direct.cacheLines << " | IndexBitAmount: " << direct.indexBitAmount << std::endl;
-	std::cout << "	CacheLineSize: " << direct.cacheLineSize << " | OffsetBitAmount " << direct.offsetBitAmount << std::endl;
-	std::cout << "	EntrySize: " << direct.entrySize << std::endl;
-	*/
-
-	sc_signal<MEMORY_REQUEST> request;
-	sc_signal<int> hit;
-
-	direct.request(request);
-	direct.out(hit);
-
-	//request.write(MEMORY_REQUEST{100, 2, 0, 0});
-	sc_start(1, SC_SEC);
-
-	//request.write(MEMORY_REQUEST{0, 100, 0, 1});
-	sc_start(1, SC_SEC);
-
-
+	std::cout << "ERROR" << std::endl;
 	return 0;
-    //std::cout << "ERROR" << std::endl;
-    //return 1;
 }
