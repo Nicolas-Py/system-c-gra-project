@@ -20,14 +20,14 @@ def merge_sort(arr, writer):
     if len(arr) <= 1:
         prev = mem_pointer
         mem_pointer += len(arr) - 1
-        print(f"Write {prev}-{mem_pointer} {arr}")
+        print(f"Write at: {prev}-{mem_pointer}, the data {arr}")
         write(writer, "W", prev, mem_pointer, arr)
         mem_pointer += 1
         return arr
 
     prev = mem_pointer
     mem_pointer += len(arr) - 1
-    print(f"Write {prev}-{mem_pointer} {arr}")
+    print(f"Write at: {prev}-{mem_pointer}, the data {arr}")
     write(writer, "W", prev, mem_pointer, arr)
     mem_pointer += 1
 
@@ -49,9 +49,9 @@ def merge(left, right, writer):
     r_pointer = mem_pointer + len(left)
 
     while i < len(left) and j < len(right):
-        print(f"Read {l_pointer} {left[i]}")
+        print(f"Read at address: {l_pointer}, the datum: {left[i]}")
         read(writer, 'R', l_pointer)
-        print(f"Read {r_pointer} {right[j]}")
+        print(f"Read at address: {r_pointer}, the datum: {right[j]}")
         read(writer, 'R', r_pointer)
         if left[i] <= right[j]:
             print(f"added from left array {left[i]}")
@@ -65,7 +65,7 @@ def merge(left, right, writer):
             j += 1
 
     while i < len(left):
-        print(f"Read {l_pointer} {left[i]}")
+        print(f"Read at address: {l_pointer}, the datum: {left[i]}")
         read(writer, 'R', l_pointer)
         print(f"added from left array {left[i]}")
         result.append(left[i])
@@ -73,22 +73,22 @@ def merge(left, right, writer):
         i += 1
 
     while j < len(right):
-        print(f"Read {r_pointer} {right[j]}")
+        print(f"Read at address: {r_pointer}, the datum: {right[j]}")
         read(writer, 'R', r_pointer)
         print(f"added from right array {right[j]}")
         result.append(right[j])
         r_pointer += 1
         j += 1
 
-    print(f"Write {mem_pointer - len(result)}-{mem_pointer - 1} {result}")
+    print(f"Write at: {mem_pointer - len(result)}-{mem_pointer-1}, the data {result}")
     write(writer, "W", mem_pointer - len(result), mem_pointer - 1, result)
     return result
 
 
 if __name__ == '__main__':
-    with open("merge_sort_out.csv", 'w', newline='') as csvfile:
+    with open("../examples/merge_sort_out.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        n = 7
+        n = 2
         arr = []
         for int in range(2**n):
             arr.append(int)
@@ -97,4 +97,4 @@ if __name__ == '__main__':
         print(f"Initial array: {arr}")
         sorted_arr = merge_sort(arr, writer)
         print(f"Sorted array: {sorted_arr}")
-        print(f"Final memory usage: {mem_pointer}")
+        # print(f"Final memory usage: {mem_pointer}")

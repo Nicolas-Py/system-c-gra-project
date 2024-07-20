@@ -144,6 +144,7 @@ int main(int argc, char* argv[]) {
 
 
     // Run the simulation
+    printf("directMapped %d\n", directMapped);
     struct Result res = run_simulation(cycles, directMapped, cacheLines, cacheLineSize,
                                        cacheLatency, memoryLatency, num_requests, requests, tracefile);
 

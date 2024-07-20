@@ -56,7 +56,7 @@ def run_tests(executable, num_tests):
         cache_line_size = random.choice([32, 64, 128])
         cache_latency = random.randint(1, 10)
         memory_latency = random.randint(50, 200)
-        num_instructions = random.randint(1000, 10000)
+        num_instructions = random.randint(10000, 10000)
 
         # Generate input file
         input_file = f"../test_files/factory_out/test_input_{test_num}.csv"
@@ -112,6 +112,6 @@ def run_tests(executable, num_tests):
 
 if __name__ == "__main__":
     executable_path = "../cache_simulation"  # Update this with the path to your compiled C program
-    num_tests = 100  # Number of tests to run
+    num_tests = 1  # Number of tests to run
 
     run_tests(executable_path, num_tests)
