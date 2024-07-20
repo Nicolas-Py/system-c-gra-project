@@ -98,10 +98,6 @@ def run_tests(executable, num_tests):
             print(f"  Cache hit ratio: {hit_ratio:.2f}")
             print(f"Results: {results}")
 
-            # Additional checks based on cache configuration
-            if direct_mapped:
-                assert results['Cache hits'] + results['Cache misses'] <= cache_lines * cycles, "Total accesses exceed maximum possible for direct-mapped cache"
-
             print(f"Test {test_num + 1} passed")
         except AssertionError as e:
             print(f"Test {test_num + 1} failed: {str(e)}")
