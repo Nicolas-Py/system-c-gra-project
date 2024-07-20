@@ -19,7 +19,26 @@ https://go56siq@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
 https://github.com/Nicolas-Py/system-c-gra-project.git
 ```
 
-
+# How to run
+1. Clean old executables
+    ``` bash
+    make clean
+    ```
+2. Build the project
+    ``` bash
+    make
+    ```
+3. Test the program
+    ``` bash
+    ./cache_simulation "./examples/random_small.csv"
+    ```
+4. get familiar with the options
+    ``` bash
+    ./cache_simulation -h
+5. Run the program with further customisation e.g. cycle count 
+    ``` bash
+    ./cache_simulation -c 1000 "./examples/random_small.csv"
+    ```
 # /examples/
 This dir contains some .csv files that you can use for testing. 
 ## Random Operations
