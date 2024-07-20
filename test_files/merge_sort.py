@@ -1,5 +1,6 @@
 import csv
 import math
+import random
 
 mem_pointer = 0
 
@@ -85,10 +86,14 @@ def merge(left, right, writer):
 
 
 if __name__ == '__main__':
-    with open("test", 'w', newline='') as csvfile:
+    with open("merge_sort_out.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
+        n = 4
+        arr = []
+        for int in range(2**n):
+            arr.append(int)
 
-        arr = [4, 3, 2, 1]
+        random.shuffle(arr)
         print(f"Initial array: {arr}")
         sorted_arr = merge_sort(arr, writer)
         print(f"Sorted array: {sorted_arr}")
