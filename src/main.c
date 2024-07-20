@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include "parse_csv.c"
 #include "print_usage.c"
+#include "limits.h"
 
 struct Result {
 	size_t cycles;
@@ -60,13 +61,18 @@ int main(int argc, char* argv[]) {
 
     while ((c = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
         switch (c) {
-            case 'c':
-                cycles = strtol(optarg, NULL, 10);
-                if (errno == ERANGE || cycles <= 0) {
+            case 'c': {
+                errno = 0;
+                char* endptr; // checks for non decimals
+                long tempCycles = strtol(optarg, &endptr, 10);
+                if (errno == ERANGE || tempCycles <= 0 || *endptr != '\0'|| tempCycles > INT_MAX) {
                     fprintf(stderr, "Error: Number of cycles must be a positive integer.\n");
                     exit(1);
                 }
+                cycles = (int) tempCycles;
                 break;
+            }
+
             case 'd':
                 if (f_flag) {
                     fprintf(stderr, "Error: You can only select either --directmapped or --fullassociative, not both.\n");
@@ -75,6 +81,7 @@ int main(int argc, char* argv[]) {
                 directMapped = 1;
                 d_flag = 1;
                 break;
+
             case 'f':
                 if (d_flag) {
                     fprintf(stderr, "Error: You can only select either --directmapped or --fullassociative, not both.\n");
@@ -83,34 +90,55 @@ int main(int argc, char* argv[]) {
                 directMapped = 0;
                 f_flag = 1;
                 break;
-            case 's':
-                cacheLineSize = strtol(optarg, NULL, 10);
-                if (errno == ERANGE || cacheLineSize <= 0) {
+
+            case 's': {
+                errno = 0;
+                char* endptr; // checks for non decimals
+                long tempSize = strtol(optarg, &endptr, 10);
+                if (errno == ERANGE || tempSize <= 0 || *endptr != '\0' || tempSize > UINT_MAX) {
                     fprintf(stderr, "Error: Cache line size must be a positive integer.\n");
                     exit(1);
                 }
+                cacheLineSize = (unsigned) tempSize;
                 break;
-            case 'l':
-                cacheLines = strtol(optarg, NULL, 10);
-                if (errno == ERANGE || cacheLines <= 0) {
+            }
+
+            case 'l': {
+                errno = 0;
+                char* endptr; // checks for non decimals
+                long tempLines = strtol(optarg, &endptr, 10);
+                if (errno == ERANGE || tempLines <= 0 || *endptr != '\0' || tempLines > UINT_MAX) {
                     fprintf(stderr, "Error: Number of cache lines must be a positive integer.\n");
                     exit(1);
                 }
+                cacheLines = (unsigned) tempLines;
                 break;
-            case 'a':
-                cacheLatency = strtol(optarg, NULL, 10);
-                if (errno == ERANGE || cacheLatency <= 0) {
+            }
+
+            case 'a': {
+                errno = 0;
+                char* endptr; // checks for non decimals
+                long tempCacheLatency = strtol(optarg, &endptr, 10);
+                if (errno == ERANGE || tempCacheLatency <= 0 || *endptr != '\0' || tempCacheLatency > UINT_MAX) {
                     fprintf(stderr, "Error: Cache latency must be a positive integer.\n");
                     exit(1);
                 }
+                cacheLatency = (unsigned) tempCacheLatency;
                 break;
-            case 'm':
-                memoryLatency = strtol(optarg, NULL, 10);
-                if (errno == ERANGE || memoryLatency <= 0) {
+            }
+
+            case 'm': {
+                errno = 0;
+                char* endptr; // checks for non decimals
+                long tempMemoryLatency = strtol(optarg, &endptr, 10);
+                if (errno == ERANGE || tempMemoryLatency <= 0 || *endptr != '\0' || tempMemoryLatency > UINT_MAX) {
                     fprintf(stderr, "Error: Memory latency must be a positive integer.\n");
                     exit(1);
                 }
+                memoryLatency = (unsigned) tempMemoryLatency;
                 break;
+            }
+
             case 't':
                 tracefile = optarg;
                 if (access(tracefile, F_OK) == -1) {
@@ -118,16 +146,20 @@ int main(int argc, char* argv[]) {
                     exit(1);
                 }
                 break;
+
             case 'h':
                 print_usage(argv[0]);
                 exit(0);
+
             case '?':
                 // Unrecognized option, getopt_long already prints an error message.
                 exit(1);
+
             default:
                 abort();
         }
     }
+
 
     // Check for input file (positional argument)
     if (optind < argc) {
@@ -143,9 +175,11 @@ int main(int argc, char* argv[]) {
     struct Request* requests = parse_csv(inputfile, &num_requests);
 
 
+
     // Run the simulation
     struct Result res = run_simulation(cycles, directMapped, cacheLines, cacheLineSize,
                                        cacheLatency, memoryLatency, num_requests, requests, tracefile);
+
 
 
     // print csv (for testing)
@@ -154,6 +188,7 @@ int main(int argc, char* argv[]) {
     //}
 
     // Print results
+
     printf("Simulation Results:\n");
     printf("Cycles: %zu\n", res.cycles);
     printf("Cache hits: %zu\n", res.hits);
