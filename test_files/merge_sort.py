@@ -88,7 +88,7 @@ def merge(left, right, writer):
 if __name__ == '__main__':
     with open("merge_sort_out.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        n = 4
+        n = 7
         arr = []
         for int in range(2**n):
             arr.append(int)
