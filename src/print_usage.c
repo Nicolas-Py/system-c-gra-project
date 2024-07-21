@@ -22,8 +22,8 @@ void print_usage(const char* program_name) {
 
     fprintf(stderr, "Usage:\n");
     fprintf(stderr, "  program call                 %s "MAG"[OPTIONS]"RESET" "YELLOW"<input_file>"RESET"\n", program_name);
-    fprintf(stderr, "  "MAG"[OPTIONS]"RESET"                    Possible arguemts to \n");
-    fprintf(stderr, "  "YELLOW"<input_file>"RESET"                 the path to the inputfile\n\n");
+    fprintf(stderr, "  "MAG"[OPTIONS]"RESET"                    arguments to customize the simulation (Optional)\n");
+    fprintf(stderr, "  "YELLOW"<input_file>"RESET"                 the path to the inputfile (Required)\n\n");
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -c, --cycles <num>           Number of cycles to simulate\n");
     fprintf(stderr, "  --directmapped               Simulate a direct-mapped cache\n");

@@ -1,11 +1,13 @@
 #
 
-# Urls
-### Artemis:
+# Beiträge
 Nico:
-```
-https://go98mir@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
+
+- Konzeptionierung und implementierung des angepassten merge sort algorithms
+- Erstellen der main.c (und print_usage.c) funktionen mit überarbeitung der edge cases von Daniel
+- Automatisches testen der beiden cache implementation mit automatisch generierten instruktionen (bis zu 100.000)
+- Testen der command line schnittstelle auf richtiges input handling
+
 Daniel:
 ```
 https://go98puj@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
@@ -42,7 +44,7 @@ https://github.com/Nicolas-Py/system-c-gra-project.git
     ./cache_simulation -c 1000 "./examples/random_small.csv"
     ```
 
-# /examples/ (Nico)
+# /examples/ 
 Dieses Verzeichnis enthält einige CSV-Dateien, die Sie zum Testen verwenden können.
 
 ## Zufällige Operationen
@@ -67,6 +69,7 @@ Simuliert Merge Sort mit dem Array
 
 ### merge_sort_medium.csv
 Simuliert Merge Sort mit dem Array
+
 `[22, 6, 11, 21, 13, 10, 8, 7, 23, 25, 24, 29, 9, 15, 3, 31, 18, 20, 0, 16, 30, 2, 28, 27, 14, 19, 5, 1, 12, 4, 26, 17]`
 
 ### merge_sort_big.csv
@@ -76,7 +79,7 @@ Simuliert Merge Sort mit dem Array
 
 Wenn Sie die Lese-/Schreibschritte in einer lesbaren Form sehen möchten, führen Sie `test_files/merge_sort.py` aus.
 
-# /test_files/ (Nico)
+# /test_files/
 Dieses Verzeichnis enthält einige Python-Skripte für Tests und Eingabegenerierung.
 
 ## merge_sort.py
