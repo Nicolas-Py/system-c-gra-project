@@ -89,22 +89,12 @@ SC_MODULE(MAIN_MEMORY) {
 
     void update() {
         while(true) {
-            //extract tag-index bits for key in hashmap and offset for index in the vector
+            //extract tag-index bits for key in hashmap and offset for indexing in the vector
             Address tag_index = request.read().addr >> offsetBitAmount;
             Offset offset = request.read().addr << (32-offsetBitAmount);
             offset >>= (32-offsetBitAmount);
 
-            //Testing:
-            /*
-            std::bitset<32> TAG_INDEX(tag_index);
-            std::bitset<32> Offset(offset);
-            std:: cout << "\nMemory stuff: " << std::endl;
-            std::cout << "	Tag_Index: " << TAG_INDEX << " | Decimal: " << tag_index << std::endl;
-            std::cout << "	Offset: " << Offset << " | Decimal: " << offset << std::endl;
-            */
-            //test end
-
-            //if tag-index is not yet found in the memory create a vector for addresses of that combination
+            //if tag-index is not yet found in the memory, create a vector for that tag-index-address
             if (memory.find(tag_index) == memory.end()) {
                 memory[tag_index] = std::vector<uint32_t>(cacheLineSize, 0);
             }
@@ -117,7 +107,6 @@ SC_MODULE(MAIN_MEMORY) {
             //update block to replace the cacheline with
             returnBlock.block = extractBlock(offset, tag_index);
 
-            // printMemory();
             out.write(returnBlock);
             blockUpdated.notify(SC_ZERO_TIME); //notifies the cache that the block is ready to send over
             wait();
@@ -129,27 +118,6 @@ SC_MODULE(MAIN_MEMORY) {
         std::vector<uint32_t>& block = memory[tag_index];
         return {block.begin() + offset - (offset/entrySize), block.begin() + offset - (offset/entrySize) + blockAmount};
     }
-
-    //testing:
-    void printMemory() {
-        std::cout << "\nMemory lines: " << std::endl;
-        for (const auto& [key, value] : memory) {
-            std::cout << "Key " << key << ": [";
-
-            bool first = true;
-            for (const auto& element : value) {
-                if (first) {
-                    first = false;
-                } else {
-                    std::cout << " | ";
-                }
-                std::cout << element;
-            }
-            std::cout << "]" <<std::endl;
-        }
-    }
-    //test end
-
 };
 
 #endif //MAIN_MEMORY_HPP
