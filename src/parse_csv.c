@@ -8,101 +8,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parse_csv.h"
-
-#include <errno.h>
-
 #include <ctype.h>
 
 #define MAX_REQUESTS 100000
 #define MAX_LINE_LENGTH 100000
 
 
-size_t line_count(const char* path) {
-    FILE* file = fopen(path, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        exit(EXIT_FAILURE);
-    }
-
-    size_t count = 0;
-    char buffer[1024];
-
-    while (fgets(buffer, sizeof(buffer), file)) {
-        count++;
-    }
-
-    fclose(file);
-    return count;
-
-}
-
-int is_valid(const char* str) {
-    char* endptr;
-    errno = 0;
-    strtoul(str, &endptr, 0);
-    if (errno != 0 || *endptr != '\0') {
-        return 0;
-    }
-    return 1;
-}
-
-int is_valid_hex_or_decimal(const char *str) {
-    if (str == NULL || *str == '\0') {
-        return 0;
-    }
-
-    int is_hex = 0;
-    int i = 0;
-
-    // Check for hexadecimal prefix
-    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
-        is_hex = 1;
-        i = 2;
-    }
-    fprintf(stderr, "ishex %d\n", is_hex);
-    // Iterate through the remaining characters
-    for (; str[i] != '\0' || isxdigit(str[i]) != 10; i++) {
-        if (is_hex) {
-            fprintf(stderr, "char %d\n", str[i]);
-            if (!isxdigit(str[i])) {
-                return 0;
-            }
-        } else {
-            if (!isdigit(str[i])) {
-                return 0;
-            }
-        }
-    }
-
-    return 1;
-}
-
-
-
-
-int is_empty_or_whitespace(const char* str) {
-    while (*str != '\0') {
-        if (!isspace(*str)) {
-            return 0; // Not empty or whitespace
-        }
-        str++;
-    }
-    return 1; // Empty or whitespace
-}
-
-
-
 // Function to check if a string is a valid decimal or hexadecimal number
 int isValidNumber(const char *str) {
     if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
-        // Hexadecimal
+        // check for hexadecimal validity
         for (int i = 2; str[i] != '\0'; i++) {
             if (!isxdigit((unsigned char)str[i])) {
                 return 0;
             }
         }
     } else {
-        // Decimal
+        // check for decimal validity
         for (int i = 0; str[i] != '\0'; i++) {
             if (!isdigit((unsigned char)str[i])) {
                 return 0;
@@ -136,7 +58,7 @@ struct Request* parse_csv(const char* path, size_t* count) {
         fclose(file);
         return NULL;
     }
-
+    //using char line[] creates a so called buffer to read line by line
     char line[MAX_LINE_LENGTH];
     int lineNumber = 0;
     *count = 0;
@@ -158,11 +80,12 @@ struct Request* parse_csv(const char* path, size_t* count) {
         while (token != NULL) {
             // Remove leading/trailing whitespace
             char *trimmed = token;
-            while (isspace((unsigned char)*trimmed)) trimmed++;
+            while (isspace(*trimmed)) trimmed++;
             char *end = trimmed + strlen(trimmed) - 1;
-            while (end > trimmed && isspace((unsigned char)*end)) end--;
+            while (end > trimmed && isspace(*end)) end--;
             *(end + 1) = '\0';
 
+            //Each line may not have more than three columns
             if (column >= 3) {
                 printf("Error on line %d: Too many columns.\n", lineNumber);
                 free(requests);
@@ -205,7 +128,6 @@ struct Request* parse_csv(const char* path, size_t* count) {
                     strcpy(thirdColumn, trimmed);
                     break;
             }
-
             token = strtok(NULL, ",");
             column++;
         }
@@ -224,81 +146,6 @@ struct Request* parse_csv(const char* path, size_t* count) {
 
         (*count)++;
     }
-
     fclose(file);
     return requests;
 }
-
-
-
-
-
-
-
-
-
-/*
-struct Request * parse_csv(const char* path, size_t* num_requests) {
-
-    FILE* file = fopen(path, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return NULL;
-    }
-
-    *num_requests = line_count(path);
-    struct Request* requests = (struct Request *)malloc(*num_requests * sizeof(struct Request));
-
-    if (requests == NULL) {
-        perror("Failed to allocate memory");
-        fclose(file);
-        exit(EXIT_FAILURE);
-    }
-
-    fseek(file, 0, SEEK_SET);
-    char buffer[1024];
-    size_t index = 0;
-
-    while (fgets(buffer, sizeof(buffer), file)) {
-        char* operation = strtok(buffer, ",");
-        char* addr_str = strtok(NULL, ",");
-        char* data_str = strtok(NULL, ",");
-        printf("operation: %s, address: %s, data: %s", operation, addr_str, data_str);
-
-        if (operation == NULL || addr_str == NULL) {
-            fprintf(stderr, "Invalid CSV format at line %zu\n", index + 1);
-            return NULL;
-        }
-
-        if (strcmp(operation, "W") == 0) {
-            requests[index].we = 1;
-            if (data_str == NULL || !is_valid(data_str)) {
-                fprintf(stderr, "Invalid data or missing data for write operation at line %zu\n", index + 1);
-                return NULL;
-            }
-            requests[index].data = (uint32_t)strtoul(data_str, NULL, 0);
-        } else if (strcmp(operation, "R") == 0) {
-            requests[index].we = 0;
-            if (data_str != NULL && strlen(data_str) > 0) {
-                fprintf(stderr, "Data provided for read operation at line %zu, should be empty!\n", index + 1);
-                return NULL;
-            }
-            requests[index].data = 0;
-        } else {
-            fprintf(stderr, "Unknownn operation '%s' at line %zu\n", operation, index + 1);
-            return NULL;
-        }
-
-        if (!is_valid(addr_str)) {
-            fprintf(stderr, "Invalid address '%s' at line %zu\n", addr_str, index + 1);
-            return NULL;
-        }
-        requests[index].addr = (uint32_t)strtoul(addr_str, NULL, 0);
-        index++;
-    }
-
-    fclose(file);
-    return requests;
-
-}
-*/

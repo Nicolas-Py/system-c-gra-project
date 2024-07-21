@@ -1,20 +1,18 @@
-#makefile created by ziang liu on 24.02.2024
+#makefile created by Ziang liu on 24.02.2024
 
 #------------------------
 #configuartion start
 #------------------------
 
-#entry point and target name
+#entry point and target name. main.c executes the run simulation which is called from module.cpp
 C_SOURCE = src/main.c
 CPP_SOURCE = src/modules.cpp
 
-#from .c to .o
+#this is used to convert .c to .o
 C_OBJECT = $(C_SOURCE:.c=.o)
 
-#from .cpp to .o
+#this is used to convert .cpp to .o
 CPP_OBJECT = $(CPP_SOURCE:.cpp=.o)
-
-HEADERS := src/modules.hpp
 
 # name for executable/target name
 TARGET := cache_simulation
