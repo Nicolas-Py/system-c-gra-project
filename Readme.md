@@ -7,9 +7,12 @@ Nico:
 https://go98mir@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
 ```
 Daniel:
-```
-https://go98puj@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
+- Implementierung des Hauptspeichers + Interaktion mit dem Cache
+- Allgemeiner Cacheaufbau und Festlegung der Basisfunktion der Caches
+- Entwicklung und Implementierung des Direct-Mapped-Cache.
+- Optimierung des Vollassoziativen-Cache-Modells
+- Überprüfung von Grenzfällen und Fehlerszenarien in der Kommandozeilen-Eingabe
+
 Ziang:
 ```
 https://go56siq@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git

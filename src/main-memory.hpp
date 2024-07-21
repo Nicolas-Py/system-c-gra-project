@@ -1,7 +1,3 @@
-//
-// Created by Daniel Singh on 15.07.24.
-//
-
 #ifndef MAIN_MEMORY_HPP
 #define MAIN_MEMORY_HPP
 
@@ -63,9 +59,10 @@ SC_MODULE(MAIN_MEMORY) {
 
     /*
     our memory will consist of a hashmap which stores the Tag-Index bits as key and as value
-    contains an vector which can be directly index with the offset
+    contains a vector which can be directly indexed with the offset
     */
     std::unordered_map<uint32_t, std::vector<uint32_t>> memory;
+
     Block returnBlock;
 
     sc_in<MEMORY_REQUEST> request;
@@ -89,7 +86,7 @@ SC_MODULE(MAIN_MEMORY) {
 
     void update() {
         while(true) {
-            //extract tag-index bits for key in hashmap and offset for indexing in the vector
+            //extract tag-index bits for key in hashmap and offset for indexing inside the vector
             Address tag_index = request.read().addr >> offsetBitAmount;
             Offset offset = request.read().addr << (32-offsetBitAmount);
             offset >>= (32-offsetBitAmount);
@@ -104,7 +101,7 @@ SC_MODULE(MAIN_MEMORY) {
                 memory[tag_index][offset] = request.read().data;
             }
 
-            //update block to replace the cacheline with
+            //update block which will be used to replace the cacheline
             returnBlock.block = extractBlock(offset, tag_index);
 
             out.write(returnBlock);
