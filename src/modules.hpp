@@ -23,7 +23,8 @@ struct MEMORY_REQUEST {
 	int requestNum;
 
 	MEMORY_REQUEST(): addr(0), data(0), we(0), requestNum(0){}
-	MEMORY_REQUEST(uint32_t addr, uint32_t data, int we, int requestNum): addr(addr), data(data), we(we), requestNum(requestNum) {}
+	MEMORY_REQUEST(uint32_t addr, uint32_t data, int we, int requestNum):
+	addr(addr), data(data), we(we), requestNum(requestNum) {}
 
 	//overwritten the assignment operator
 	MEMORY_REQUEST& operator=(const MEMORY_REQUEST& request) {
