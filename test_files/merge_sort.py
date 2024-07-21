@@ -1,20 +1,26 @@
 import csv
-import math
 import random
 
 mem_pointer = 0
 
 
 def read(writer, op, address, data=''):
-    writer.writerow([op, hex(address*32), data])
+    writer.writerow([op, hex(address * 32), data])
 
 
 def write(writer, op, i, ii, data):
     for addr in range(i, ii + 1):
-        writer.writerow([op, hex(addr*32), data[addr - i]])
+        writer.writerow([op, hex(addr * 32), data[addr - i]])
 
 
 def merge_sort(arr, writer):
+    """
+    Sorts an array using the mergesort algorithm and generates instructions in the csv format
+
+    Args:
+        arr: The input array to be sorted. (length of the array must be a power of 2)
+        writer: An instance of csv.writer(csvfile)
+    """
     global mem_pointer
 
     if len(arr) <= 1:
@@ -42,12 +48,11 @@ def merge(left, right, writer):
     global mem_pointer
     result = []
     i, j = 0, 0
-    # print(mem_pointer)
-    mem_pointer -= (len(right) + len(left))
-    # print(mem_pointer)
-    l_pointer = mem_pointer
-    r_pointer = mem_pointer + len(left)
+    mem_pointer -= (len(right) + len(left))  # starts at the beginning
+    l_pointer = mem_pointer  # pointer for the left sub array
+    r_pointer = mem_pointer + len(left)  # pointer for the right sub array
 
+    # the print statements give insight into the performed operations
     while i < len(left) and j < len(right):
         print(f"Read at address: {l_pointer}, the datum: {left[i]}")
         read(writer, 'R', l_pointer)
@@ -80,7 +85,7 @@ def merge(left, right, writer):
         r_pointer += 1
         j += 1
 
-    print(f"Write at: {mem_pointer - len(result)}-{mem_pointer-1}, the data {result}")
+    print(f"Write at: {mem_pointer - len(result)}-{mem_pointer - 1}, the data {result}")
     write(writer, "W", mem_pointer - len(result), mem_pointer - 1, result)
     return result
 
@@ -90,12 +95,13 @@ if __name__ == '__main__':
         writer = csv.writer(csvfile)
         n = 8
         arr = []
-        arr2 = [2, 0, 1, 3]
-        for int in range(2**n):
-            arr.append(int)
 
+        # generates an test array of length 2^n
+        for i in range(2 ** n):
+            arr.append(i)
+
+        # shuffles the array
         random.shuffle(arr)
         print(f"Initial array: {arr}")
         sorted_arr = merge_sort(arr, writer)
         print(f"Sorted array: {sorted_arr}")
-        # print(f"Final memory usage: {mem_pointer}")

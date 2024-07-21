@@ -184,15 +184,7 @@ int main(int argc, char* argv[]) {
     struct Result res = run_simulation(cycles, directMapped, cacheLines, cacheLineSize,
                                        cacheLatency, memoryLatency, num_requests, requests, tracefile);
 
-
-
-    // print csv (for testing)
-    //for (int i = 0; i < num_requests; i++) {
-      //  printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
-    //}
-
     // Print results
-
     printf("Simulation Results:\n");
     printf("Cycles: %zu\n", res.cycles);
     printf("Cache hits: %zu\n", res.hits);

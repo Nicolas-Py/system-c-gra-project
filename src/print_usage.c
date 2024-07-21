@@ -35,12 +35,12 @@ void print_usage(const char* program_name) {
     fprintf(stderr, "  --tf=<filename>              Output tracefile with all signals\n");
     fprintf(stderr, "  -h, --help                   Display this help message\n\n");
     fprintf(stderr, "Default values:\n");
-    fprintf(stderr, "  Cycles:                      %d\n", 1000);
+    fprintf(stderr, "  Cycles:                      %d\n", 10000);
     fprintf(stderr, "  Directmapped:                %s\n", "1 - So a directmapped cache gets simulated");
-    fprintf(stderr, "  Cacheline Size:              %d\n", 64);
-    fprintf(stderr, "  Number of Cachelines:        %d\n", 64);
-    fprintf(stderr, "  Cache-latency:               %d\n", 1);
-    fprintf(stderr, "  Memory-latency:              %d\n", 64);
+    fprintf(stderr, "  Cacheline Size:              %d\n", 32);
+    fprintf(stderr, "  Number of Cachelines:        %d\n", 8);
+    fprintf(stderr, "  Cache-latency:               %d\n", 5);
+    fprintf(stderr, "  Memory-latency:              %d\n", 100);
     fprintf(stderr, "  Tracefile:                   %s\n", "No default value, if this argument is not");
     fprintf(stderr, "                               %s\n", "provided no tracefile will be created");
 }
