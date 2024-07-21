@@ -100,15 +100,15 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                         update_memory_request.write(req); //memory write back
                         wait(main_memory.blockUpdated);
 
-                        cache[index].line[offset/entrySize] = req.data;
-                        out.write(1);
+                        cache[index].line[offset/entrySize] = req.data; //data is written to the specifc offset of the line when line is found by tag and index
+                        out.write(1); //writes 1 for hit
                     } else {
                         update_memory_request.write(req); //memory write back
                         wait(main_memory.blockUpdated);
 
                         cache[index].tag = data_tag;
-                        cache[index].line = memory_block.read().block;
-                        out.write(0);
+                        cache[index].line = memory_block.read().block; //cache line is overwritten
+                        out.write(0); //writes 0 for miss
                     }
                 } else {
                     update_memory_request.write(req); //memory write back
@@ -116,21 +116,21 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
 
                     cache[index].occupied = true;
                     cache[index].tag = data_tag;
-                    cache[index].line = memory_block.read().block;
-                    out.write(0);
+                    cache[index].line = memory_block.read().block; //data is written into the unoccupied cache line
+                    out.write(0); //writes 0 for miss
                 }
             //for reading operation
             } else {
                 if (cache[index].occupied) {
                     if (cache[index].tag == data_tag) {
-                        out.write(1);
+                        out.write(1); //writes 1 for hit
                     } else {
                         update_memory_request.write(req); //memory write back
                         wait(main_memory.blockUpdated);
 
                         cache[index].tag = data_tag;
-                        cache[index].line = memory_block.read().block;
-                        out.write(0);
+                        cache[index].line = memory_block.read().block; //cache line is overwritten with data block loaded from memory
+                        out.write(0); //writes 0 for miss
                     }
                 } else {
                     update_memory_request.write(req); //memory write back
@@ -138,8 +138,8 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
 
                     cache[index].occupied = true;
                     cache[index].tag = data_tag;
-                    cache[index].line = memory_block.read().block;
-                    out.write(0);
+                    cache[index].line = memory_block.read().block; //unoccupied cache line is inserted with data block from memory
+                    out.write(0); //write 0 for miss
                 }
             }
             wait();

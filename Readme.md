@@ -3,16 +3,23 @@
 # Beiträge
 Nico:
 
-- Konzeptionierung und implementierung des angepassten merge sort algorithms
-- Erstellen der main.c (und print_usage.c) funktionen mit überarbeitung der edge cases von Daniel
-- Automatisches testen der beiden cache implementation mit automatisch generierten instruktionen (bis zu 100.000)
-- Testen der command line schnittstelle auf richtiges input handling
+- Konzeptionierung und Implementierung des angepassten Merge-Sort-Algorithmus
+- Erstellen der main.c (und print_usage.c) Funktionen, inklusive Überarbeitung der Sonderfälle(Edge Cases) in Zusammenarbeit mit Daniel
+- Automatische Tests der beiden Cache-Implementierungen mit bis zu 100.00 automatisch generierten Instruktionen
+- Überprüfung der Kommandozeilenschnittstelle auf korrektes Input-Handling
+```
+https://go98mir@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
+```
 
 Daniel:
 ```
 https://go98puj@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
 ```
 Ziang:
+
+- Erstellung des Makefiles 
+- Erstellung einer Funktion zum Einlesen von Anfragen aus CSV-Dateien 
+- Mitarbeit an der Funktionalität des voll-assoziativen Caches
 ```
 https://go56siq@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
 ```
