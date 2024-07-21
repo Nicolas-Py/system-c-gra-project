@@ -57,6 +57,34 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
         dont_initialize();
     }
 
+    CacheLine* findLine(Tag data_tag) {
+        std::vector<CacheLine*> empty_lines;
+        CacheLine* lru_line = nullptr;
+
+        size_t start = rand() % cacheLines;
+        for (int i = 0; i < cacheLines; i++) {
+            size_t index = (start + i) % cacheLines;
+            auto& cache_line = cache[index];
+
+            if (cache_line.occupied && data_tag == cache_line.tag) {
+                return &cache_line;
+            }
+            if (!cache_line.occupied) {
+                empty_lines.push_back(&cache_line);
+            }
+            if(!lru_line || cache_line.lastAccess < lru_line->lastAccess) {
+                lru_line = &cache_line;
+            }
+
+        }
+
+        if (!empty_lines.empty()) {
+            return empty_lines[rand() % empty_lines.size()];
+        }
+        return lru_line;
+    }
+
+
     void update() {
         while (true) {
             MEMORY_REQUEST req = request.read();
@@ -65,29 +93,9 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
 
             Tag data_tag = req.addr >> offsetBitAmount;
 
-            CacheLine* line = nullptr;
+            CacheLine* line = findLine(data_tag);
 
 
-            for (auto& cache_line : cache) {
-                if (cache_line.occupied && cache_line.tag == data_tag) {
-                    line = &cache_line;
-                    break;
-                }
-            }
-
-            if (!line) {
-                line = &cache[0];
-                for (auto& cache_line : cache) {
-                    if (!cache_line.occupied) {
-                        line = &cache_line;
-                        break;
-                    }
-                    if (cache_line.lastAccess < line->lastAccess) {
-                        line = &cache_line;
-                    }
-
-                }
-            }
 
             if (req.we) {
                 if (line->occupied) {
