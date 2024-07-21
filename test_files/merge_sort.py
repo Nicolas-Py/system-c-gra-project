@@ -93,7 +93,7 @@ def merge(left, right, writer):
 if __name__ == '__main__':
     with open("../examples/merge_sort_out.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        n = 8
+        n = 5
         arr = []
 
         # generates an test array of length 2^n

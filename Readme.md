@@ -65,6 +65,10 @@ Simuliert Merge Sort mit dem Array
 
 `[2, 0, 1, 3]`
 
+### merge_sort_medium.csv
+Simuliert Merge Sort mit dem Array
+`[22, 6, 11, 21, 13, 10, 8, 7, 23, 25, 24, 29, 9, 15, 3, 31, 18, 20, 0, 16, 30, 2, 28, 27, 14, 19, 5, 1, 12, 4, 26, 17]`
+
 ### merge_sort_big.csv
 Simuliert Merge Sort mit dem Array
 
