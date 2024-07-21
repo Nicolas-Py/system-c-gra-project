@@ -7,6 +7,7 @@
 
 #include "main-memory.hpp"
 #include "modules.hpp"
+#include <random>
 
 
 SC_MODULE(ASSOCIATIVE_CACHE) {
@@ -17,7 +18,6 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
     struct CacheLine {
         bool occupied = false;
         Tag tag = 0;
-        uint32_t lastAccess = 0;
         std::vector<uint32_t> line;
 
         CacheLine (uint32_t size): line(size, 0) {}
@@ -32,7 +32,6 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
     int offsetBitAmount;
     sc_in<MEMORY_REQUEST> request;
     sc_out<int> out;
-    int hits = 0, misses = 0;
 
     MAIN_MEMORY main_memory;
     sc_signal<MEMORY_REQUEST> update_memory_request;
@@ -57,31 +56,21 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
         dont_initialize();
     }
 
-    CacheLine* findLine(Tag data_tag) {
-        std::vector<CacheLine*> empty_lines;
-        CacheLine* lru_line = nullptr;
-
-        size_t start = rand() % cacheLines;
-        for (int i = 0; i < cacheLines; i++) {
-            size_t index = (start + i) % cacheLines;
-            auto& cache_line = cache[index];
-
-            if (cache_line.occupied && data_tag == cache_line.tag) {
-                return &cache_line;
+    int findLine(Tag data_tag) {
+        for (int i = 0; i < cache.size(); i++) {
+            if (cache[i].occupied && cache[i].tag == data_tag) {
+                return i;
             }
-            if (!cache_line.occupied) {
-                empty_lines.push_back(&cache_line);
-            }
-            if(!lru_line || cache_line.lastAccess < lru_line->lastAccess) {
-                lru_line = &cache_line;
-            }
-
         }
-
-        if (!empty_lines.empty()) {
-            return empty_lines[rand() % empty_lines.size()];
+        for (int i = 0; i < cache.size(); i++) {
+            if (!cache[i].occupied) {
+                return i;
+            }
         }
-        return lru_line;
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution<std::mt19937::result_type> dist(0, cache.size() - 1);
+        return dist(rng);
     }
 
 
@@ -93,66 +82,58 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
 
             Tag data_tag = req.addr >> offsetBitAmount;
 
-            CacheLine* line = findLine(data_tag);
-
-
+            int index = findLine(data_tag);
 
             if (req.we) {
-                if (line->occupied) {
-                    if (line->tag == data_tag) {
+                if (cache[index].occupied) {
+                    if (cache[index].tag == data_tag) {
                         update_memory_request.write(req);
                         wait(main_memory.blockUpdated);
 
-                        line->line[offset/entrySize] = req.data;
+                        cache[index].line[offset/entrySize] = req.data;
                         out.write(1);
-                        hits++;
                     } else {
                         update_memory_request.write(req);
                         wait(main_memory.blockUpdated);
 
-                        line->tag = data_tag;
-                        line->line = memory_block.read().block;
+                        cache[index].tag = data_tag;
+                        cache[index].line = memory_block.read().block;
                         out.write(0);
-                        misses++;
                     }
                 } else {
                     update_memory_request.write(req);
                     wait(main_memory.blockUpdated);
 
-                    line->occupied = true;
-                    line->tag = data_tag;
-                    line->line = memory_block.read().block;
+                    cache[index].occupied = true;
+                    cache[index].tag = data_tag;
+                    cache[index].line = memory_block.read().block;
                     out.write(0);
-                    misses++;
                 }
             } else {
-                if (line->occupied) {
-                    if (line->tag == data_tag) {
-                        hits++;
+                if (cache[index].occupied) {
+                    if (cache[index].tag == data_tag) {
                         out.write(1);
                     } else {
                         update_memory_request.write(req);
                         wait(main_memory.blockUpdated);
 
-                        line->tag = data_tag;
-                        line->line = memory_block.read().block;
+                        cache[index].tag = data_tag;
+                        cache[index].line = memory_block.read().block;
                         out.write(0);
-                        misses++;
                     }
                 } else {
                     update_memory_request.write(req);
                     wait(main_memory.blockUpdated);
 
-                    line->occupied = true;
-                    line->tag = data_tag;
-                    line->line = memory_block.read().block;
+                    cache[index].occupied = true;
+                    cache[index].tag = data_tag;
+                    cache[index].line = memory_block.read().block;
                     out.write(0);
-                    misses++;
                 }
             }
-            line->lastAccess = misses+hits;
 
 
+            /*
             std::bitset<32> Tag(data_tag);
             std::bitset<32> Offset(offset);
             std::bitset<32> Address(request.read().addr);
@@ -165,6 +146,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
             printCache();
             std::cout << "Misses: " << misses  << " | Hits: " << hits << std::endl;
             //Test end
+            */
 
             wait();
         }
@@ -178,7 +160,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
             for (uint32_t entry : cacheLine.line) {
                 std::cout << " " << entry << ",";
             }
-            std::cout<< "] " << "LRU count: " << cacheLine.lastAccess << std::endl;
+            std::cout<< "] " << std::endl;
         }
     }
 

@@ -36,7 +36,6 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
 
     sc_in<MEMORY_REQUEST> request;
     sc_out<int> out; //hit or miss
-    int hits, misses;
 
     //signals for main memory binding
     MAIN_MEMORY main_memory;
@@ -58,7 +57,7 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
 
         //memory bindings
         main_memory.request.bind(mainMemoryRequest);
-        main_memory.out(memoryBlock);
+        main_memory.out.bind(memoryBlock);
 
 
         SC_THREAD(update);
@@ -68,7 +67,7 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
 
     void update() {
         while (true) {
-            //logic to offset, index and tag bits
+            //logic to extract offset, index and tag bits
             Offset offset = request.read().addr << (32-offsetBitAmount);
             offset >>= (32-offsetBitAmount);
 
@@ -80,25 +79,23 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
            if (request.read().we) {
                if (cache[index].occupied) {
                     if (cache[index].tag == tag) {
-                        //update memory wait for the block to be present
+                        //update memory and wait for the block to be present
                         mainMemoryRequest.write(request.read());
                         wait(main_memory.blockUpdated);
 
                         cache[index].line[offset/entrySize] = request.read().data;
                         out.write(1);
-                        hits++;
                     } else {
-                        //update memory wait for the block to be present
+                        //update memory and wait for the block to be present
                         mainMemoryRequest.write(request.read());
                         wait(main_memory.blockUpdated);
 
                         cache[index].tag = tag;
                         cache[index].line = memoryBlock.read().block;
                         out.write(0);
-                        misses++;
                     }
                } else {
-                   //update memory wait for the block to be present
+                   //update memory and wait for the block to be present
                    mainMemoryRequest.write(request.read());
                    wait(main_memory.blockUpdated);
 
@@ -106,25 +103,22 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
                    cache[index].occupied = true;
                    cache[index].line = memoryBlock.read().block;
                    out.write(0);
-                   misses++;
                }
            } else {
                if (cache[index].occupied) {
                    if (cache[index].tag == tag) {
                        out.write(1);
-                       hits++;
                    } else {
-                       //update memory wait for the block to be present
+                       //update memory and wait for the block to be present
                        mainMemoryRequest.write(request.read());
                        wait(main_memory.blockUpdated);
 
                        cache[index].tag = tag;
                        cache[index].line = memoryBlock.read().block;
                        out.write(0);
-                       misses++;
                    }
                } else {
-                   //update memory wait for the block to be present
+                   //update memory and wait for the block to be present
                    mainMemoryRequest.write(request.read());
                    wait(main_memory.blockUpdated);
 
@@ -132,69 +126,12 @@ SC_MODULE(DIRECT_MAPPED_CACHE) {
                    cache[index].occupied = true;
                    cache[index].line = memoryBlock.read().block;
                    out.write(0);
-                   misses++;
                }
            }
-
-
-            //Testing:
-            /*
-            std::bitset<32> Tag(tag);
-            std::bitset<32> Index(index);
-            std::bitset<32> Offset(offset);
-            std::bitset<32> Address(request.read().addr);
-
-            std::cout << "\nCacheStuff: " << std::endl;
-            std::cout << "	Address binary: " << Address << " | Decimal: " << request.read().addr << std::endl;
-            std::cout << "	Tag: " << Tag << " | Decimal: " << tag << std::endl;
-            std::cout << "	Index: " << Index << " | Decimal: " << index << std::endl;
-            std::cout << "	Offset: " << Offset << " | Decimal: " << offset << std::endl;
-            std::cout << "\nCache lines:" << std::endl;
-            printCache();
-            std::cout << "Misses: " << misses  << " | Hits: " << hits << std::endl;
-            */
-            //Test end
 
             wait();
         }
     }
-
-    //Testing:
-    void printCache() {
-        for (CacheLine cacheLine: cache) {
-            std::cout << "Tag " << cacheLine.tag << ": [";
-            for (uint32_t entry : cacheLine.line) {
-                std::cout << " " << entry << ",";
-            }
-            std::cout<< "]" << std::endl;
-        }
-    }
-    //Test end
 };
-
-SC_MODULE(SOMETHING) {
-    sc_signal<bool> a;
-
-    DIRECT_MAPPED_CACHE direct;
-
-    sc_signal<MEMORY_REQUEST> req;
-
-    SC_CTOR(SOMETHING): direct("direct", 1, 2, sizeof(uint32_t)) {
-        direct.request(req);
-
-        SC_THREAD(update);
-        sensitive << a;
-        dont_initialize();
-    }
-
-    void update() {
-        for (int i=0; i<10; i++) {
-            MEMORY_REQUEST request(1, 2, 3, i);
-            req.write(request);
-            wait(SC_ZERO_TIME);
-        }
-    }
-};
-
 
 #endif //DIRECT_MAPPED_CACHE_HPP
