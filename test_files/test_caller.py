@@ -38,11 +38,11 @@ def run_tests(executable, num_tests, test_files, direct_mapped):
         print(f"Running test {test_num + 1}/{num_tests}")
 
         # Generate random parameters
-        cycles = 100000
-        cache_lines = 128
-        cache_line_size = 128
+        cycles = 1000000000
+        cache_lines = 8
+        cache_line_size = 32
         cache_latency = 5
-        memory_latency = 100
+        memory_latency = 20
 
 
         # Generate input file
@@ -97,7 +97,7 @@ def run_tests(executable, num_tests, test_files, direct_mapped):
 
 if __name__ == '__main__':
     executable_path = "../cache_simulation"
-    test_files = ["../test_files/merge_sort_out.csv"]
+    test_files = ["../examples/merge_sort_big.csv"]
 
     run_tests(executable_path, len(test_files), test_files, False)
     run_tests(executable_path, len(test_files), test_files, True)

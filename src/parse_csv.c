@@ -13,8 +13,8 @@
 
 #include <ctype.h>
 
-#define MAX_REQUESTS 1000
-#define MAX_LINE_LENGTH 1000
+#define MAX_REQUESTS 100000
+#define MAX_LINE_LENGTH 100000
 
 
 size_t line_count(const char* path) {

@@ -6,12 +6,12 @@ mem_pointer = 0
 
 
 def read(writer, op, address, data=''):
-    writer.writerow([op, hex(address), data])
+    writer.writerow([op, hex(address*32), data])
 
 
 def write(writer, op, i, ii, data):
     for addr in range(i, ii + 1):
-        writer.writerow([op, hex(addr), data[addr - i]])
+        writer.writerow([op, hex(addr*32), data[addr - i]])
 
 
 def merge_sort(arr, writer):
@@ -88,8 +88,9 @@ def merge(left, right, writer):
 if __name__ == '__main__':
     with open("../examples/merge_sort_out.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        n = 2
+        n = 8
         arr = []
+        arr2 = [2, 0, 1, 3]
         for int in range(2**n):
             arr.append(int)
 
