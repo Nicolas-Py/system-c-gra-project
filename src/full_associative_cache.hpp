@@ -19,7 +19,6 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
         bool occupied = false;
         Tag tag = 0;
         std::vector<uint32_t> line;
-
         CacheLine (uint32_t size): line(size, 0) {}
     };
 
@@ -56,6 +55,10 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
         dont_initialize();
     }
 
+    /*
+     Since full associative caches do not have index bits, we can't directly index to the cache lines, therefore we have to search through the whole cache line by line
+     and compare the tags to find the correct cache line, if we do not find the line by its, we find an empty line or we select a random line to replace if all cache lines are full.
+     */
     int findLine(Tag data_tag) {
         for (int i = 0; i < cache.size(); i++) {
             if (cache[i].occupied && cache[i].tag == data_tag) {
@@ -78,24 +81,29 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
 
     void update() {
         while (true) {
+            /*
+             For full associative cache, the address only contains the tag bits and offset bits.
+             The tag bits and offset bits are extracted from the address using shift operations.
+             */
             MEMORY_REQUEST req = request.read();
             Offset offset = req.addr << (32 - offsetBitAmount);
             offset >>= (32 - offsetBitAmount);
-
             Tag data_tag = req.addr >> offsetBitAmount;
 
+            //this line does not mean that we are indexing with a full associative cache, we are finding the line using the findLine function identified by its tag.
             int index = findLine(data_tag);
 
+            //Write operation
             if (req.we) {
                 if (cache[index].occupied) {
                     if (cache[index].tag == data_tag) {
-                        update_memory_request.write(req);
+                        update_memory_request.write(req); //memory write back
                         wait(main_memory.blockUpdated);
 
                         cache[index].line[offset/entrySize] = req.data;
                         out.write(1);
                     } else {
-                        update_memory_request.write(req);
+                        update_memory_request.write(req); //memory write back
                         wait(main_memory.blockUpdated);
 
                         cache[index].tag = data_tag;
@@ -103,7 +111,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                         out.write(0);
                     }
                 } else {
-                    update_memory_request.write(req);
+                    update_memory_request.write(req); //memory write back
                     wait(main_memory.blockUpdated);
 
                     cache[index].occupied = true;
@@ -111,12 +119,13 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                     cache[index].line = memory_block.read().block;
                     out.write(0);
                 }
+            //for reading operation
             } else {
                 if (cache[index].occupied) {
                     if (cache[index].tag == data_tag) {
                         out.write(1);
                     } else {
-                        update_memory_request.write(req);
+                        update_memory_request.write(req); //memory write back
                         wait(main_memory.blockUpdated);
 
                         cache[index].tag = data_tag;
@@ -124,7 +133,7 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                         out.write(0);
                     }
                 } else {
-                    update_memory_request.write(req);
+                    update_memory_request.write(req); //memory write back
                     wait(main_memory.blockUpdated);
 
                     cache[index].occupied = true;
@@ -133,55 +142,9 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                     out.write(0);
                 }
             }
-
-
-            /*
-            std::bitset<32> Tag(data_tag);
-            std::bitset<32> Offset(offset);
-            std::bitset<32> Address(request.read().addr);
-
-            std::cout << "\nCacheStuff: " << std::endl;
-            std::cout << "	Address binary: " << Address << " | Decimal: " << request.read().addr << std::endl;
-            std::cout << "	Tag: " << Tag << " | Decimal: " << data_tag << std::endl;
-            std::cout << "	Offset: " << Offset << " | Decimal: " << offset << std::endl;
-            std::cout << "\nCache lines:" << std::endl;
-            printCache();
-            std::cout << "Misses: " << misses  << " | Hits: " << hits << std::endl;
-            //Test end
-            */
-
             wait();
         }
     }
-
-
-
-    void printCache() {
-        for (CacheLine cacheLine: cache) {
-            std::cout << "Tag " << cacheLine.tag << ": [";
-            for (uint32_t entry : cacheLine.line) {
-                std::cout << " " << entry << ",";
-            }
-            std::cout<< "] " << std::endl;
-        }
-    }
-
 };
-
-extern "C" struct Result run_simulation (
-    int cycles,
-    int directMapped,
-    unsigned cacheLines,
-    unsigned cacheLineSize,
-    unsigned cacheLatency,
-    unsigned memoryLatency,
-    size_t numRequests,
-    Request requests[numRequests],
-    const char * tracefile
-);
-
-
-
-
 
 #endif //FULL_ASSOCIATIVE_CACHE_HPP

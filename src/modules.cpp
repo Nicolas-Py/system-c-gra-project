@@ -4,7 +4,6 @@
 #include "modules.hpp"
 #include "direct-mapped-cache.hpp"
 #include "full_associative_cache.hpp"
-#include "main-memory.hpp"
 # include <map>
 
 
@@ -50,7 +49,8 @@ Result run_simulation (
 				break;
 			}
 		}
-		Result testResult = {cyclesCount, misses, hits, 1};
+		size_t primitiveGateCount = (cacheLines * cacheLineSize * 8 * 4) + 150 + 50;
+		Result testResult = {cyclesCount, misses, hits, primitiveGateCount};
 		return testResult;
 	} else {
 		printf("ASSOCIATIVE_CACHE\n");
@@ -83,7 +83,8 @@ Result run_simulation (
 			}
 
 		}
-		Result testResult = {cyclesCount, misses, hits, 1};
+		size_t primitiveGateCount = (cacheLines * cacheLineSize * 8 * 4) + (cacheLines * 150) + (cacheLines * log2(cacheLines) * 10) + (cacheLines * 50);
+		Result testResult = {cyclesCount, misses, hits, primitiveGateCount};
 		return testResult;
 	}
 }
