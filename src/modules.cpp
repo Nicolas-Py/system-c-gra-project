@@ -1,10 +1,8 @@
-//
-// Created by Nicolas von Mallinckrodt on 24.06.24.
-//
 #include "modules.hpp"
 #include "direct-mapped-cache.hpp"
 #include "full_associative_cache.hpp"
-# include <map>
+#include <map>
+
 
 
 Result run_simulation (
@@ -32,6 +30,13 @@ Result run_simulation (
 		direct.request(request);
 		direct.out(hit);
 
+		sc_trace_file* trace = nullptr;
+		if (tracefile) {
+			trace = sc_create_vcd_trace_file(tracefile);
+			sc_trace(trace, request, "request");
+			sc_trace(trace, hit, "hit");
+		}
+
 		for (int i = 0; i < numRequests; i++) {
 			printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
 			request.write(MEMORY_REQUEST{requests[i].addr, requests[i].data, requests[i].we, i});
@@ -51,6 +56,10 @@ Result run_simulation (
 		}
 		size_t primitiveGateCount = (cacheLines * cacheLineSize * 8 * 4) + 150 + 50;
 		Result testResult = {cyclesCount, misses, hits, primitiveGateCount};
+
+		if (tracefile && trace) {
+			sc_close_vcd_trace_file(trace);
+		}
 		return testResult;
 	} else {
 		printf("ASSOCIATIVE_CACHE\n");
@@ -64,6 +73,13 @@ Result run_simulation (
 
 		associative_cache.request(request);
 		associative_cache.out(hit);
+
+		sc_trace_file* trace = nullptr;
+		if (tracefile) {
+			trace = sc_create_vcd_trace_file(tracefile);
+			sc_trace(trace, request, "request");
+			sc_trace(trace, hit, "hit");
+		}
 
 		for (int i = 0; i < numRequests; i++) {
 			printf("Request number: %u, address: %u, data: %u, write/enable: %d\n", i + 1, requests[i].addr, requests[i].data, requests[i].we);
@@ -85,6 +101,9 @@ Result run_simulation (
 		}
 		size_t primitiveGateCount = (cacheLines * cacheLineSize * 8 * 4) + (cacheLines * 150) + (cacheLines * log2(cacheLines) * 10) + (cacheLines * 50);
 		Result testResult = {cyclesCount, misses, hits, primitiveGateCount};
+		if (tracefile && trace) {
+			sc_close_vcd_trace_file(trace);
+		}
 		return testResult;
 	}
 }
