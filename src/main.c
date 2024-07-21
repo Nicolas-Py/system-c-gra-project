@@ -31,8 +31,8 @@ extern struct Result run_simulation (
 
 int main(int argc, char* argv[]) {
     // Default values
-    int cycles = 100000;  // Default number of cycles
-    int directMapped = 0;  // Default to direct-mapped cache
+    int cycles = 10000;  // Default number of cycles
+    int directMapped = 1;  // Default to direct-mapped cache
     unsigned cacheLines = 8;  // Default number of cache lines
     unsigned cacheLineSize = 32;  // Default cache line size in bytes
     unsigned cacheLatency = 5;  // Default cache latency in cycles
