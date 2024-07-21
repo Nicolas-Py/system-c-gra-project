@@ -1,6 +1,6 @@
 # Projektbericht: Cache-Simulation und Analyse
 
-## Aufgabenstekkung
+## Aufgabenstellung
 Dieses Projekt untersucht die Simulation von Direct-Mapped und voll-assoziativen Caches in modernen Prozessoren. Ziel ist es, die Leistungsmetriken beider Cache-Architekturen zu vergleichen, implementiert in SystemC, C++ und C.
 
 ## Literaturrecherche
@@ -40,9 +40,6 @@ Wir haben außerdem einen Hauptspeicher implementiert, der die Aufgabe hat, Date
 - **Herausforderungen:** Komplexität bei der Implementierung von Fully-Associative Caches ohne LRU-Ersatzpolitik.
 - **Lernfortschritte:** Vertieftes Verständnis der Cache-Architekturen und praktische Erfahrung in der Implementierung und Analyse von Systemkomponenten mit C++, SystemC und C.
 
-**Schlusswort:**
-- Das Projekt lieferte wertvolle Einblicke in die Funktionsweise und Leistungsfähigkeit verschiedener Cache-Architekturen. Die gewonnenen Erkenntnisse können als Grundlage für weiterführende Forschung und Entwicklung im Bereich der Speicherverwaltung dienen.
-
 # Beiträge
 Nico:
 
@@ -50,33 +47,21 @@ Nico:
 - Erstellen der main.c (und print_usage.c) Funktionen, inklusive Überarbeitung der Sonderfälle(Edge Cases) in Zusammenarbeit mit Daniel
 - Automatische Tests der beiden Cache-Implementierungen mit bis zu 100.00 automatisch generierten Instruktionen
 - Überprüfung der Kommandozeilenschnittstelle auf korrektes Input-Handling
-```
-https://go98mir@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
+
 
 Daniel:
 - Implementierung des Hauptspeichers + Interaktion mit dem Cache
 - Allgemeiner Cacheaufbau und Festlegung der Basisfunktion der Caches
 - Entwicklung und Implementierung des Direct-Mapped-Cache.
-- Optimierung des voll-assoziativen Cache-Modells
+- Optimierung des Voll-Assoziativen-Cache-Modells
 - Überprüfung von Sonderfälle und Fehlerszenarien in der Kommandozeilen-Eingabe
-```
-https://go98puj@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
 
 Ziang:
 
 - Erstellung des Makefiles 
 - Erstellung einer Funktion zum Einlesen von Requests aus CSV-Dateien
-- Mitarbeit an der Funktionalität und Implementierung des voll-assoziativen Caches
+- Mitarbeit an der Funktionalität und Implementierung des Voll-Assoziativen-Caches
 ```
-https://go56siq@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
-### [GitHub](https://github.com/Nicolas-Py/system-c-gra-project.git):
-```
-https://github.com/Nicolas-Py/system-c-gra-project.git
-```
-
 
 # Ausführungsanleitung
 1. Alte ausführbare Dateien bereinigen
