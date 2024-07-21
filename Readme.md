@@ -47,9 +47,7 @@ Nico:
 - Erstellen der main.c (und print_usage.c) Funktionen, inklusive Überarbeitung der Sonderfälle(Edge Cases) in Zusammenarbeit mit Daniel
 - Automatische Tests der beiden Cache-Implementierungen mit bis zu 100.00 automatisch generierten Instruktionen
 - Überprüfung der Kommandozeilenschnittstelle auf korrektes Input-Handling
-```
-https://go98mir@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
+
 
 Daniel:
 - Implementierung des Hauptspeichers + Interaktion mit dem Cache
@@ -57,9 +55,6 @@ Daniel:
 - Entwicklung und Implementierung des Direct-Mapped-Cache.
 - Optimierung des Voll-Assoziativen-Cache-Modells
 - Überprüfung von Sonderfälle und Fehlerszenarien in der Kommandozeilen-Eingabe
-```
-https://go98puj@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
 
 Ziang:
 
@@ -67,13 +62,6 @@ Ziang:
 - Erstellung einer Funktion zum Einlesen von Requests aus CSV-Dateien
 - Mitarbeit an der Funktionalität und Implementierung des Voll-Assoziativen-Caches
 ```
-https://go56siq@artemis.cit.tum.de/git/GRA24CDAPROJECT/gra24cdaproject-g116.git
-```
-### [GitHub](https://github.com/Nicolas-Py/system-c-gra-project.git):
-```
-https://github.com/Nicolas-Py/system-c-gra-project.git
-```
-
 
 # Ausführungsanleitung
 1. Alte ausführbare Dateien bereinigen
