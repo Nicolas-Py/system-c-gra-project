@@ -67,6 +67,8 @@ SC_MODULE(ASSOCIATIVE_CACHE) {
                 return i;
             }
         }
+        //stack overflow question:
+        //https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
         std::random_device dev;
         std::mt19937 rng(dev());
         std::uniform_int_distribution<std::mt19937::result_type> dist(0, cache.size() - 1);
