@@ -61,7 +61,6 @@ Ziang:
 - Erstellung des Makefiles 
 - Erstellung einer Funktion zum Einlesen von Requests aus CSV-Dateien
 - Mitarbeit an der Funktionalität und Implementierung des Voll-Assoziativen-Caches
-```
 
 # Ausführungsanleitung
 1. Alte ausführbare Dateien bereinigen
